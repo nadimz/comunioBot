@@ -1,0 +1,10 @@
+{
+	"name": "comunioBot",
+	"version": "0.1.0",
+	"dependencies": {
+		"cron": "^1.8.2",
+		"fs-promise": "^2.0.3",
+		"node-fetch": "^2.6.1",
+		"telegraf": "^3.38.0"
+	}
+}

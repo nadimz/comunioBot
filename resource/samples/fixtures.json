@@ -1,0 +1,387 @@
+{
+    "api": {
+        "results": 10,
+        "fixtures": [
+            {
+                "fixture_id": 605069,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-07T11:00:00+02:00",
+                "event_timestamp": 1599850800,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio Nuevo Los Cármenes",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 715,
+                    "team_name": "Granada CF",
+                    "logo": "https://media.api-sports.io/football/teams/715.png"
+                },
+                "awayTeam": {
+                    "team_id": 531,
+                    "team_name": "Athletic Club",
+                    "logo": "https://media.api-sports.io/football/teams/531.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605067,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-07T23:00:00+02:00",
+                "event_timestamp": 1599919200,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio Municipal de Ipurúa",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 545,
+                    "team_name": "Eibar",
+                    "logo": "https://media.api-sports.io/football/teams/545.png"
+                },
+                "awayTeam": {
+                    "team_id": 538,
+                    "team_name": "Celta Vigo",
+                    "logo": "https://media.api-sports.io/football/teams/538.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605068,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-08T21:00:00+02:00",
+                "event_timestamp": 1599937200,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio Ramón de Carranza",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 724,
+                    "team_name": "Cadiz",
+                    "logo": "https://media.api-sports.io/football/teams/724.png"
+                },
+                "awayTeam": {
+                    "team_id": 727,
+                    "team_name": "Osasuna",
+                    "logo": "https://media.api-sports.io/football/teams/727.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605072,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-08T16:00:00+02:00",
+                "event_timestamp": 1600005600,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio Municipal José Zorrilla",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 720,
+                    "team_name": "Valladolid",
+                    "logo": "https://media.api-sports.io/football/teams/720.png"
+                },
+                "awayTeam": {
+                    "team_id": 548,
+                    "team_name": "Real Sociedad",
+                    "logo": "https://media.api-sports.io/football/teams/548.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605066,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-08T17:00:00+02:00",
+                "event_timestamp": 1600009200,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Match Postponed",
+                "statusShort": "PST",
+                "elapsed": 0,
+                "venue": "Camp Nou",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 529,
+                    "team_name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "team_id": 797,
+                    "team_name": "Elche",
+                    "logo": "https://media.api-sports.io/football/teams/797.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605070,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-09T17:00:00+02:00",
+                "event_timestamp": 1600009200,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Match Postponed",
+                "statusShort": "PST",
+                "elapsed": 0,
+                "venue": "Estadio Santiago Bernabéu",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 541,
+                    "team_name": "Real Madrid",
+                    "logo": "https://media.api-sports.io/football/teams/541.png"
+                },
+                "awayTeam": {
+                    "team_id": 546,
+                    "team_name": "Getafe",
+                    "logo": "https://media.api-sports.io/football/teams/546.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605073,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-09T18:30:00+02:00",
+                "event_timestamp": 1600014600,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio de la Cerámica",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 533,
+                    "team_name": "Villarreal",
+                    "logo": "https://media.api-sports.io/football/teams/533.png"
+                },
+                "awayTeam": {
+                    "team_id": 726,
+                    "team_name": "Huesca",
+                    "logo": "https://media.api-sports.io/football/teams/726.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605071,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-09T21:00:00+02:00",
+                "event_timestamp": 1600023600,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio de Mestalla",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 532,
+                    "team_name": "Valencia",
+                    "logo": "https://media.api-sports.io/football/teams/532.png"
+                },
+                "awayTeam": {
+                    "team_id": 539,
+                    "team_name": "Levante",
+                    "logo": "https://media.api-sports.io/football/teams/539.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605065,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2020-09-09T21:00:00+02:00",
+                "event_timestamp": 1600110000,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Not Started",
+                "statusShort": "NS",
+                "elapsed": 0,
+                "venue": "Estadio de Mendizorroza",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 542,
+                    "team_name": "Alaves",
+                    "logo": "https://media.api-sports.io/football/teams/542.png"
+                },
+                "awayTeam": {
+                    "team_id": 543,
+                    "team_name": "Real Betis",
+                    "logo": "https://media.api-sports.io/football/teams/543.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            },
+            {
+                "fixture_id": 605074,
+                "league_id": 2833,
+                "league": {
+                    "name": "Primera Division",
+                    "country": "Spain",
+                    "logo": "https://media.api-sports.io/football/leagues/140.png",
+                    "flag": "https://media.api-sports.io/flags/es.svg"
+                },
+                "event_date": "2021-01-09T01:00:00+01:00",
+                "event_timestamp": 1610409600,
+                "firstHalfStart": null,
+                "secondHalfStart": null,
+                "round": "Regular Season - 1",
+                "status": "Time to be defined",
+                "statusShort": "TBD",
+                "elapsed": 0,
+                "venue": "Estadio Wanda Metropolitano",
+                "referee": null,
+                "homeTeam": {
+                    "team_id": 530,
+                    "team_name": "Atletico Madrid",
+                    "logo": "https://media.api-sports.io/football/teams/530.png"
+                },
+                "awayTeam": {
+                    "team_id": 536,
+                    "team_name": "Sevilla",
+                    "logo": "https://media.api-sports.io/football/teams/536.png"
+                },
+                "goalsHomeTeam": null,
+                "goalsAwayTeam": null,
+                "score": {
+                    "halftime": null,
+                    "fulltime": null,
+                    "extratime": null,
+                    "penalty": null
+                }
+            }
+        ]
+    }
+}
