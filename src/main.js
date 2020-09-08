@@ -34,10 +34,6 @@ function getRandomInsult(player) {
 
 bot.use((ctx, next) => {
 	//console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
-	fs.writeFile(`./resource/samples/comunioBot.log`, `msg from ${ctx.message.chat.id}`)
-	.then()
-	.catch()
-	
 	next()
 })
 
