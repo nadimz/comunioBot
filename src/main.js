@@ -38,15 +38,16 @@ bot.use((ctx, next) => {
 })
 
 bot.hears(/benzema/i, (ctx) => {
-	ctx.webhookReply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 	console.log('reply with insult')
 	})
 	
-bot.on('new_chat_members', (ctx) => ctx.webhookReply('Hola chicos!'))
+bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
 
 bot.launch({
 	webhook: {
-		domain: 'https://comuniobot.herokuapp.com/' + process.env.BOT_TOKEN,
+		domain: 'https://comuniobot.herokuapp.com',
+		hookPath: '/x3g3hWa22iO3268iriKyR5UmV1FuDVP5D',
 		port: process.env.PORT || 5000
 	}
 })
