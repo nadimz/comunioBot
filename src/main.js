@@ -33,12 +33,13 @@ function getRandomInsult(player) {
 }
 
 bot.use((ctx, next) => {
-	//console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
+	console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
 	next()
 })
 
 bot.hears(/benzema/i, (ctx) => {
 	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+	console.log('reply with insult')
 	})
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
