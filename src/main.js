@@ -39,8 +39,8 @@ bot.use((ctx, next) => {
 
 bot.hears(/benzema/i, (ctx) => {
 	//ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
-	ctx.reply(getRandomInsult('Benzema'))
-	console.log('reply with insult')
+	console.log(`reply ${getRandomInsult('Benzema')} to ${ctx.message.message_id} in ${ctx.chat.id} `)
+	bot.telegram.sendMessage(ctx.chat.id, getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 	})
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
