@@ -43,6 +43,11 @@ bot.hears(/benzema/i, (ctx) => {
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
 
-bot.launch()
+bot.launch({
+	webhook: {
+		domain: 'https://comuniobot.herokuapp.com/' + process.env.BOT_TOKEN,
+		port: process.env.PORT | 5000
+	}
+})
 
 publisher.start()
