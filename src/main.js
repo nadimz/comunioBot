@@ -2,11 +2,7 @@ const fs = require('fs').promises;
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const publisher = require('./lib/publisher')
-const bot = new Telegraf(process.env.BOT_TOKEN,
-						 {telegram: {
-							 agent: null,
-							 webhookReply: true
-						 }})
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
 function getRandomInsult(player) {
 	var playerInsults = [
@@ -42,7 +38,8 @@ bot.use((ctx, next) => {
 })
 
 bot.hears(/benzema/i, (ctx) => {
-	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+	//ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+	ctx.reply(getRandomInsult('Benzema'))
 	console.log('reply with insult')
 	})
 	
