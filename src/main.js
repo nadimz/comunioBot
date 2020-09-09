@@ -2,7 +2,11 @@ const fs = require('fs').promises;
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const publisher = require('./lib/publisher')
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const bot = new Telegraf(process.env.BOT_TOKEN,
+						 {telegram: {
+							 agent: null,
+							 webhookReply: true
+						 }})
 
 function getRandomInsult(player) {
 	var playerInsults = [
