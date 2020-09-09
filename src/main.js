@@ -36,26 +36,14 @@ function getRandomInsult(player) {
 	return playerInsults[Math.floor(Math.random() * playerInsults.length)]
 }
 
-function msgReply(ctx, msg) {
-	console.log(`reply to ${ctx.message.message_id} in ${ctx.chat.id}`)
-	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
-}
-
-function scheduleReply(ctx, msg) {
-	let date = new Date();
-	date.setSeconds(date.getSeconds() + ((Math.random() * 5) + 1))
-
-	const job = new CronJob(date, msgReply, ctx, msg)
-	job.start()
-}
-
 bot.use((ctx, next) => {
 	console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
 	next()
 })
 
 bot.hears(/benzema/i, (ctx) => {
-	scheduleReply(ctx, getRandomInsult('Benzema'))
+	console.log(`reply to ${ctx.message.message_id} in ${ctx.chat.id}`)
+	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 })
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
