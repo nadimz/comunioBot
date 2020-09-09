@@ -2,7 +2,11 @@ const fs = require('fs').promises;
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const publisher = require('./lib/publisher')
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const bot = new Telegraf(process.env.BOT_TOKEN, {
+						telegram: {
+							agent: null,
+							webhookReply: false
+						}})
 
 function getRandomInsult(player) {
 	var playerInsults = [
@@ -32,16 +36,27 @@ function getRandomInsult(player) {
 	return playerInsults[Math.floor(Math.random() * playerInsults.length)]
 }
 
+function msgReply(ctx, msg) {
+	console.log(`reply to ${ctx.message.message_id} in ${ctx.chat.id}`)
+	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+}
+
+function scheduleReply(ctx, msg) {
+	let date = new Date();
+	date.setSeconds(date.getSeconds() + ((Math.random() * 5) + 1))
+
+	const job = new CronJob(date, msgReply, ctx, msg)
+	job.start()
+}
+
 bot.use((ctx, next) => {
 	console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
 	next()
 })
 
 bot.hears(/benzema/i, (ctx) => {
-	//ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
-	console.log(`reply ${getRandomInsult('Benzema')} to ${ctx.message.message_id} in ${ctx.chat.id} `)
-	bot.telegram.sendMessage(ctx.chat.id, getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
-	})
+	scheduleReply(ctx, getRandomInsult('Benzema'))
+})
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
 
