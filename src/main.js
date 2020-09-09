@@ -37,16 +37,14 @@ function getRandomInsult(player) {
 }
 
 bot.use((ctx, next) => {
-	console.log(`Update from chat ${ctx.message.chat.title}. chat id: ${ctx.message.chat.id}`)
 	next()
 })
 
 bot.hears(/benzema/i, (ctx) => {
 	console.log(`reply to ${ctx.message.message_id} in ${ctx.chat.id}`)
-	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 })
 	
-bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
+bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos! estoy de vuelta.. a ver el hijo de p*** que me va a romper'))
 
 bot.launch({
 	webhook: {
