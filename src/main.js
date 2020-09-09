@@ -38,11 +38,11 @@ bot.use((ctx, next) => {
 })
 
 bot.hears(/benzema/i, (ctx) => {
-	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
+	ctx.webhookReply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 	console.log('reply with insult')
 	})
 	
-bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
+bot.on('new_chat_members', (ctx) => ctx.webhookReply('Hola chicos!'))
 
 bot.launch({
 	webhook: {
@@ -53,3 +53,4 @@ bot.launch({
 
 publisher.start()
 
+bot.telegram.sendMessage(189999094, 'Back on!')
