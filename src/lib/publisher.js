@@ -29,22 +29,6 @@ function firstDayOfRound(fixtures) {
 	return false
 }
 
-function getFixturesToday(fixtures) {
-	var fixturesToday = []
-	var today = new Date()
-	
-	fixtures.forEach(function(fixture) {
-		fixtureDate = new Date(fixture.event_date)
-		
-		if ((today.getDate() == fixtureDate.getDate()) &&
-			(today.getMonth() == fixtureDate.getMonth())){
-				fixturesToday.push(fixture)
-		}
-	})
-	
-	return fixturesToday
-}
-
 async function publishFixtures(fixtures) {
 	return new Promise((resolve, reject) => {
 		if (fixtures.length > 0) {
