@@ -161,13 +161,17 @@ function scheduleDaily() {
 
 function daily() {
 	console.log(`Running daily`)
+
 	api.getCurrentRound()
 	.then((round) => api.getFixturesInRound(round))
 	.then((fixtures) => publishFirstDayOfRound(fixtures))
-	.then((fixtures) => publishFixtures(getFixturesToday(fixtures)))
-	.then((fixtures) => scheduleFixtures(getFixturesToday(fixtures)))
 	.catch(err => console.log(err));
-		
+
+	api.getFixturesToday()
+	.then((fixtures) => publishFixtures(fixtures))
+	.then((fixtures) => scheduleFixtures(fixtures))
+	.catch(err => console.log(err));
+
 	scheduleDaily()
 }
 
