@@ -6,7 +6,7 @@ const CronJob = require("cron").CronJob;
 const api = new FootballApi(process.env.FOOTBALL_API_KEY)
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-const chat_id = -1001449356877
+const chat_id = process.env.CHAT_ID
 
 function firstDayOfRound(fixtures) {
 	var earliestGame = new Date(fixtures[0].event_date)
