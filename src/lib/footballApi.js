@@ -1,6 +1,8 @@
 const fetch = require('node-fetch')
 const fs    = require('fs').promises;
 
+const dbg = process.env.DEBUG
+
 class FootballApi {
 	constructor(token) {
 		this.token = token
@@ -39,9 +41,15 @@ class FootballApi {
 	
 	async get(name, resource) {
 		return new Promise((resolve, reject) => {
-			this.getUrl(resource)
-			.then((data) => resolve(data))
-			.catch(err => reject(err));			
+			if (dbg) {
+				this.getCached(name)
+				.then((data) => resolve(data))
+				.catch(err => reject(err));
+			} else {
+				this.getUrl(resource)
+				.then((data) => resolve(data))
+				.catch(err => reject(err));
+			}
 		});
 	}
 	

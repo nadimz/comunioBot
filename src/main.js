@@ -8,6 +8,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN, {
 							webhookReply: false
 						}})
 
+const chat_id = process.env.DEBUG_CHAT_ID
+
 function getRandomInsult(player) {
 	var playerInsults = [
 		`A ${player} le huele la boca, debería callarse`,	
@@ -57,4 +59,4 @@ bot.launch({
 
 publisher.start()
 
-bot.telegram.sendMessage(189999094, 'Back on!')
+bot.telegram.sendMessage(chat_id, 'Back on!')
