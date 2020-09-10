@@ -84,8 +84,14 @@ async function publishLineUps(fixture) {
 			// home team			
 			msg += `*${fixture.homeTeam.team_name}:*\n`
 			msg += '```\n'
+			msg += 'XI\n'
 			const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
 			homeTeam.startXI.forEach(function(player) {
+				let number = (player.number).toString() + '.'
+				msg += `${number.padEnd(3)} ${player.player}\n`
+			})
+			msg += `\nSubs\n`
+			homeTeam.substitutes.forEach(function(player) {
 				let number = (player.number).toString() + '.'
 				msg += `${number.padEnd(3)} ${player.player}\n`
 			})
@@ -94,8 +100,14 @@ async function publishLineUps(fixture) {
 			// away team
 			msg += `\n*${fixture.awayTeam.team_name}:*\n`
 			msg += '```\n'
+			msg += 'XI\n'
 			const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
 			awayTeam.startXI.forEach(function(player) {
+				let number = (player.number).toString() + '.'
+				msg += `${number.padEnd(3)} ${player.player}\n`
+			})
+			msg += `\nSubs\n`
+			homeTeam.substitutes.forEach(function(player) {
 				let number = (player.number).toString() + '.'
 				msg += `${number.padEnd(3)} ${player.player}\n`
 			})
@@ -121,8 +133,11 @@ async function scheduledFixture(id) {
 function scheduleFixtures(fixtures) {
 	fixtures.forEach(function(fixture) {
 		let date = new Date(fixture.event_date)
+
+		console.log(`Fixture ${fixture.fixture_id} today at ${date}`)
+
 		date.setMinutes(date.getMinutes() - 10)
-		
+
 		let now = new Date()
 		
 		if (date.getTime() > now.getTime()) {

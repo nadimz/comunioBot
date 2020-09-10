@@ -57,7 +57,6 @@ class FootballApi {
 		return new Promise((resolve, reject) => {
 			this.get('round', `fixtures/rounds/${this.league_id}/current`)
 			.then(function(response) {
-				console.log(response)
 				resolve(response.api.fixtures[0])
 			})
 			.catch(err => reject(err));
