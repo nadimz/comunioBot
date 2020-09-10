@@ -2,11 +2,7 @@ const fs = require('fs').promises;
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const publisher = require('./lib/publisher')
-const bot = new Telegraf(process.env.BOT_TOKEN, {
-						telegram: {
-							agent: null,
-							webhookReply: false
-						}})
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
 function getRandomInsult(player) {
 	var playerInsults = [
@@ -47,13 +43,7 @@ bot.hears(/benzema/i, (ctx) => {
 	
 bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos! estoy de vuelta.. a ver el hijo de p*** que me va a romper'))
 
-bot.launch({
-	webhook: {
-		domain: 'https://comuniobot.herokuapp.com',
-		hookPath: '/x3g3hWa22iO3268iriKyR5UmV1FuDVP5D',
-		port: process.env.PORT || 5000
-	}
-})
+bot.launch()
 
 publisher.start()
 
