@@ -47,7 +47,7 @@ bot.hears(/benzema/i, (ctx) => {
 	ctx.reply(getRandomInsult('Benzema'), Extra.inReplyTo(ctx.message.message_id))
 })
 	
-bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos! estoy de vuelta.. a ver el hijo de p*** que me va a romper'))
+bot.on('new_chat_members', (ctx) => ctx.reply('Hola chicos!'))
 
 bot.launch({
 	webhook: {
