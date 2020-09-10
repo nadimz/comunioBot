@@ -75,6 +75,20 @@ class FootballApi {
 			.catch(err => reject(err));
 		});
 	}
+
+	async getFixturesToday() {
+		return new Promise((resolve, reject) => {
+			const now   = new Date()
+			const year  = now.getFullYear().toString()
+			const month = (now.getMonth() + 1).toString().padStart(2, '0')
+			const day   = now.getDate().toString().padStart(2, '0')
+			this.get('today', `fixtures/league/${this.league_id}/${year}-${month}-${day}?timezone=Europe/Madrid`)
+			.then(function(response) {
+				resolve(response.api.fixtures)
+			})
+			.catch(err => reject(err));
+		})
+	}
 }
 
 module.exports = {
