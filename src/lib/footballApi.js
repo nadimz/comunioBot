@@ -16,7 +16,7 @@ class FootballApi {
 			fs.readFile(`./resource/samples/${name}.json`)
 			.then((data) => JSON.parse(data))
 			.then((body) => resolve(body))
-			.catch(err => reject(err));			
+			.catch(err => reject(err));
 		});
 	}
 	
