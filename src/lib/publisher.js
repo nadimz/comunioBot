@@ -33,7 +33,7 @@ async function publishFixtures(fixtures) {
 	return new Promise((resolve, reject) => {
 		if (fixtures.length > 0) {
 			console.log('Publish fixtures today')
-			var msg = '*Otro día de fútbol!*\n\n'
+			var msg = '⚽️⚽️ *Otro día de fútbol!* ⚽️⚽️\n\n'
 			msg += 'Partidos hoy:\n'
 			msg += '```\n'
 			fixtures.forEach(function(fixture, idx) {
@@ -55,7 +55,7 @@ async function publishFirstDayOfRound(fixtures) {
 	return new Promise((resolve, reject) => {
 		if (firstDayOfRound(fixtures) && fixtures.length > 0) {
 			console.log('Publish first day of round')
-			var msg = '*Nueva jornada de fútbol empieza hoy!*\n\n'
+			var msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy!* ⚽️\n\n'
 			msg += 'Partidos de esta jornada:\n'
 			msg += '```\n'
 			fixtures.forEach(function(fixture, idx) {
@@ -79,10 +79,10 @@ async function publishLineUps(fixture) {
 	return new Promise((resolve, reject) => {
 		if (fixture.lineups) {
 			console.log(`Lineups for ${fixture.homeTeam.team_name} vs ${fixture.awayTeam.team_name}`)
-			let msg = `*Alineaciones confirmados para ${fixture.homeTeam.team_name} vs ${fixture.awayTeam.team_name}!*\n\n`
+			let msg = `✅ Alineaciones confirmados para *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*! ⚽️\n\n`
 			
 			// home team			
-			msg += `*${fixture.homeTeam.team_name}:*\n`
+			msg += `*${fixture.homeTeam.team_name}*\n`
 			msg += '```\n'
 			msg += 'XI\n'
 			const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
@@ -98,7 +98,7 @@ async function publishLineUps(fixture) {
 			msg += '```\n'
 			
 			// away team
-			msg += `\n*${fixture.awayTeam.team_name}:*\n`
+			msg += `\n*${fixture.awayTeam.team_name}*\n`
 			msg += '```\n'
 			msg += 'XI\n'
 			const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
