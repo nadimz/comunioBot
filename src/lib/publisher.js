@@ -213,6 +213,8 @@ function start() {
 	daily()
 }
 
+start()
+
 module.exports = {
     start
 }

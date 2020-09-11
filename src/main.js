@@ -57,6 +57,4 @@ bot.launch({
 	}
 })
 
-publisher.start()
-
 bot.telegram.sendMessage(chat_id, 'Back on!')

@@ -54,6 +54,16 @@ class FootballApi {
 		});
 	}
 	
+	async getRounds() {
+		return new Promise((resolve, reject) => {
+			this.get('rounds', `fixtures/rounds/${this.league_id}`)
+			.then(function(response) {
+				resolve(response.api.fixtures)
+			})
+			.catch(err => reject(err));
+		});
+	}
+
 	async getCurrentRound() {
 		return new Promise((resolve, reject) => {
 			this.get('round', `fixtures/rounds/${this.league_id}/current`)
