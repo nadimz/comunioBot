@@ -11,7 +11,7 @@ class FootballApi {
 		this.league_id = 2833
 	}
 	
-	async getCached(name) {
+	async getSample(name) {
 		return new Promise((resolve, reject) => {
 			fs.readFile(`./resource/samples/${name}.json`)
 			.then((data) => JSON.parse(data))
@@ -43,7 +43,7 @@ class FootballApi {
 		return new Promise((resolve, reject) => {
 			console.log(`get ${name} ${resource}`)
 			if (dbg) {
-				this.getCached(name)
+				this.getSample(name)
 				.then((data) => resolve(data))
 				.catch(err => reject(err));
 			} else {

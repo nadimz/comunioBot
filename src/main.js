@@ -30,5 +30,3 @@ bot.launch({
 		port: process.env.PORT || 5000
 	}
 })
-
-bot.telegram.sendMessage(chatId, 'Back on!')

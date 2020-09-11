@@ -1,3 +1,9 @@
+var Utils = {
+    getRandomInt: function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+    }
+};
+
 var Fun = {
     getPlayerInsult: function(player) {
 	var playerInsults = [
@@ -23,14 +29,8 @@ var Fun = {
 		`${player} es más feo que el Fary comiendo limones`,
 		`${player} es más feo que el penal de Higuaín`,
 		`${player} es tan feo que hace llorar a las cebollas`
-	];
-	return playerInsults[Math.floor(Math.random() * playerInsults.length)]
-    }
-};
-
-var Utils = {
-    getRandomInt: function(min, max) {
-        return Math.floor(Math.random() * (max - min) ) + min;
+    ];
+    return playerInsults[Utils.getRandomInt(0, playerInsults.length - 1)]
     }
 };
 
