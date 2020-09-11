@@ -1,3 +1,4 @@
+const fetch = require('node-fetch')
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const FootballApi = require('./footballApi').FootballApi
@@ -161,6 +162,30 @@ function scheduleDaily() {
 	job.start()
 }
 
+async function scheduleJokeOfTheDay() {
+	let date = new Date();
+	date.setHours(Math.floor(Math.random() * 22) + 11)
+	date.setMinutes(Math.floor(Math.random() * 55) + 1)
+	
+	console.log(`Schedule joke of the day ${date}`)
+	
+	const job = new CronJob(date, function() {
+		console.log('fetch joke')
+		fetch('https://geek-jokes.sameerkumar.website/api?format=json')
+		.then((response) => response.json())
+		.then((body) => {			
+			let msg = '😂 *Joke of the day*\n\n'
+			msg += `${body.joke}`
+			bot.telegram.sendMessage(chat_id, msg, Extra.markdown())
+		})
+		.catch((err) => function() {
+			console.log(err)
+		})
+	})
+
+	job.start()
+}
+
 function daily() {
 	console.log(`Running daily`)
 
@@ -171,6 +196,8 @@ function daily() {
 	.then((fixtures) => publishFixtures(fixtures))
 	.then((fixtures) => scheduleFixturesPreview(fixtures))
 	.catch(err => console.log(err));
+
+	scheduleJokeOfTheDay()
 
 	scheduleDaily()
 }
