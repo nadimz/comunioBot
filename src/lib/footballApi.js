@@ -7,7 +7,7 @@ class FootballApi {
 	constructor(token) {
 		this.token = token
 		this.url   = 'https://api-football-v1.p.rapidapi.com/v2'
-		
+		this.timezone = process.env.TZ		
 		this.league_id = 2833
 	}
 	
@@ -31,7 +31,7 @@ class FootballApi {
 		}
 		
 		return new Promise((resolve, reject) => {
-			console.log(`GET ${resource}`)
+			console.log(`fetch ${resource}`)
 			fetch(`${this.url}/${resource}`, options)
 			.then((response) => response.json())
 			.then((body) => resolve(body))
@@ -41,6 +41,7 @@ class FootballApi {
 	
 	async get(name, resource) {
 		return new Promise((resolve, reject) => {
+			console.log(`get ${name} ${resource}`)
 			if (dbg) {
 				this.getCached(name)
 				.then((data) => resolve(data))
@@ -65,7 +66,7 @@ class FootballApi {
 	
 	async getFixturesInRound(round) {
 		return new Promise((resolve, reject) => {
-			this.get('fixtures', `fixtures/league/${this.league_id}/${round}?timezone=Europe/Madrid`)
+			this.get('fixtures', `fixtures/league/${this.league_id}/${round}?timezone=${this.timezone}`)
 			.then(function(response) {
 				resolve(response.api.fixtures)
 			})
@@ -75,7 +76,7 @@ class FootballApi {
 	
 	async getFixtureById(id) {
 		return new Promise((resolve, reject) => {
-			this.get('fixture', `fixtures/id/${id}?timezone=Europe/Madrid`)
+			this.get('fixture', `fixtures/id/${id}?timezone=${this.timezone}`)
 			.then(function(response) {
 				resolve(response.api.fixtures[0])
 			})
@@ -89,7 +90,7 @@ class FootballApi {
 			const year  = now.getFullYear().toString()
 			const month = (now.getMonth() + 1).toString().padStart(2, '0')
 			const day   = now.getDate().toString().padStart(2, '0')
-			this.get('today', `fixtures/league/${this.league_id}/${year}-${month}-${day}?timezone=Europe/Madrid`)
+			this.get('today', `fixtures/league/${this.league_id}/${year}-${month}-${day}?timezone=${this.timezone}`)
 			.then(function(response) {
 				resolve(response.api.fixtures)
 			})
