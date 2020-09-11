@@ -9,6 +9,10 @@ const bot = new Telegraf(process.env.BOT_TOKEN)
 
 const chat_id = process.env.CHAT_ID
 
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min) ) + min;
+}
+
 function firstDayOfRound(fixtures) {
 	var earliestGame = new Date(fixtures[0].event_date)
 	
@@ -164,8 +168,11 @@ function scheduleDaily() {
 
 async function scheduleJokeOfTheDay() {
 	let date = new Date();
-	date.setHours(Math.floor(Math.random() * 22) + date.getHours() + 1)
-	date.setMinutes(Math.floor(Math.random() * 55) + 1)
+	console.log(`now ${date}`)
+	const hours = getRandomInt(date.getHours() + 1, 22)
+	const min   = getRandomInt(1, 55)	
+	date.setHours(hours)
+	date.setMinutes(min)
 	
 	console.log(`Schedule joke of the day ${date}`)
 	
