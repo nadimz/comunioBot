@@ -164,7 +164,7 @@ function scheduleDaily() {
 
 async function scheduleJokeOfTheDay() {
 	let date = new Date();
-	date.setHours(Math.floor(Math.random() * 22) + 11)
+	date.setHours(Math.floor(Math.random() * 22) + date.getHours() + 1)
 	date.setMinutes(Math.floor(Math.random() * 55) + 1)
 	
 	console.log(`Schedule joke of the day ${date}`)
