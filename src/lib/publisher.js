@@ -32,7 +32,7 @@ function firstDayOfRound(fixtures) {
 async function publishFixtures(fixtures) {
 	return new Promise((resolve, reject) => {
 		if (fixtures.length > 0) {
-			console.log('Publis fixtures today')
+			console.log('Publish fixtures today')
 			var msg = '*Otro día de fútbol!*\n\n'
 			msg += 'Partidos hoy:\n'
 			msg += '```\n'
@@ -54,7 +54,7 @@ async function publishFixtures(fixtures) {
 async function publishFirstDayOfRound(fixtures) {
 	return new Promise((resolve, reject) => {
 		if (firstDayOfRound(fixtures) && fixtures.length > 0) {
-			console.log('Publis first day of round')
+			console.log('Publish first day of round')
 			var msg = '*Nueva jornada de fútbol empieza hoy!*\n\n'
 			msg += 'Partidos de esta jornada:\n'
 			msg += '```\n'
@@ -122,7 +122,7 @@ async function publishLineUps(fixture) {
 	});
 }
 
-async function scheduledFixture(id) {	
+async function scheduledFixturePreview(id) {	
 	console.log(`Run scheduled fixture ${id} ${new Date()}`)
 	
 	api.getFixtureById(id)
@@ -130,7 +130,7 @@ async function scheduledFixture(id) {
 	.catch(err => console.log(err));
 }
 
-function scheduleFixtures(fixtures) {
+function scheduleFixturesPreview(fixtures) {
 	fixtures.forEach(function(fixture) {
 		let date = new Date(fixture.event_date)
 
@@ -143,7 +143,7 @@ function scheduleFixtures(fixtures) {
 		if (date.getTime() > now.getTime()) {
 			console.log(`Schedule fixture ${fixture.fixture_id} detail for ${date}`)
 			
-			const job = new CronJob(date, scheduledFixture, fixture.fixture_id)
+			const job = new CronJob(date, scheduledFixturePreview, fixture.fixture_id)
 			job.start()
 		}
 	})
@@ -169,7 +169,7 @@ function daily() {
 	.then((fixtures) => publishFirstDayOfRound(fixtures))
 	.then(() => api.getFixturesToday())
 	.then((fixtures) => publishFixtures(fixtures))
-	.then((fixtures) => scheduleFixtures(fixtures))
+	.then((fixtures) => scheduleFixturesPreview(fixtures))
 	.catch(err => console.log(err));
 
 	scheduleDaily()
