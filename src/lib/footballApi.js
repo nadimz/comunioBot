@@ -107,6 +107,16 @@ class FootballApi {
 			.catch(err => reject(err));
 		})
 	}
+
+	async getOdds() {
+		return new Promise((resolve, reject) => {
+			this.get('odds', `odds/league/${this.league_id}/bookmaker/6`)
+			.then(function(response) {
+				resolve(response.api.odds)
+			})
+			.catch(err => reject(err));
+		});
+	}
 }
 
 module.exports = {

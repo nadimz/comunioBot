@@ -1,7 +1,37 @@
 var Utils = {
     getRandomInt: function(min, max) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
-    }
+	},
+	
+	formatFixture: function(fixture, odds) {
+		let msg = `⚽️ *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*\n`
+		const date = new Date(fixture.event_date)
+
+		if (fixture.statusShort != 'PST') {
+			const time = date.getHours().toString().padEnd(2, '0') + ':' + date.getMinutes().toString().padEnd(2, '0')
+			msg += `  🕣 *${time}* ${fixture.venue}\n`
+
+			let oddsAvailable = false
+			odds.forEach(function(entry) {						
+				if (entry.fixture.fixture_id == fixture.fixture_id) {
+					entry.bookmakers[0].bets.forEach(function(bet) {
+						if (bet.label_id == 1) {
+							oddsAvailable = true
+							msg += `  💰 Bwin: (1) ${bet.values[0].odd}  (X) ${bet.values[1].odd}  (2) ${bet.values[2].odd}\n\n`
+						}
+					})							
+				}
+			})
+
+			if (oddsAvailable == false) {
+				msg += `  💰 Bwin: Not available\n\n`
+			}
+		} else {
+			msg += `  🕣 *Aplazado*\n\n`
+		}
+
+		return msg
+	}
 };
 
 var Fun = {

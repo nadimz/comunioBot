@@ -40,21 +40,16 @@ var Publisher = {
 		
 		return false
 	},
-
-	publishFixtures: async function(fixtures) {
+	
+	publishFixtures: async function(fixtures, odds) {
 		return new Promise((resolve, reject) => {
 			if (fixtures.length > 0) {
 				console.log('Publish fixtures today')
-				var msg = '⚽️⚽️ *Otro día de fútbol!* ⚽️⚽️\n\n'
-				msg += 'Partidos hoy:\n'
-				msg += '```\n'
-				fixtures.forEach(function(fixture, idx) {
-					var homeTeam = fixture.homeTeam.team_name
-					var awayTeam = fixture.awayTeam.team_name
-					index = (idx + 1).toString() + '.'
-					msg += `${index.padEnd(3)} ${homeTeam} vs ${awayTeam}\n`			
+				var msg = '❇️ *Otro día de fútbol!*\n\n'
+
+				fixtures.forEach(function(fixture) {
+					msg += utils.formatFixture(fixture, odds)
 				})
-				msg += '```'
 				
 				this.publish(msg)
 				.then(() => resolve(fixtures))
@@ -63,26 +58,21 @@ var Publisher = {
 		});
 	},
 
-	publishFirstDayOfRound: async function(fixtures) {
+	publishFirstDayOfRound: async function(fixtures, odds) {
 		return new Promise((resolve, reject) => {
 			if (this.firstDayOfRound(fixtures) && fixtures.length > 0) {
 				console.log('Publish first day of round')
 				var msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy!* ⚽️\n\n'
-				msg += 'Partidos de esta jornada:\n'
-				msg += '```\n'
-				fixtures.forEach(function(fixture, idx) {
-					var homeTeam = fixture.homeTeam.team_name
-					var awayTeam = fixture.awayTeam.team_name
-					index = (idx + 1).toString() + '.'
-					msg += `${index.padEnd(3)} ${homeTeam} vs ${awayTeam}\n`			
+				
+				fixtures.forEach(function(fixture) {
+					msg += utils.formatFixture(fixture, odds)
 				})
-				msg += '```'
 				
 				this.publish(msg)
-				.then(() => resolve(fixtures))
+				.then(() => resolve())
 				.catch((err) => reject(err))
 			} else if (fixtures.length > 0) {
-				resolve(fixtures)
+				resolve()
 			}		
 		});
 	},
@@ -91,39 +81,35 @@ var Publisher = {
 		return new Promise((resolve, reject) => {
 			if (fixture.lineups) {
 				console.log(`Lineups for ${fixture.homeTeam.team_name} vs ${fixture.awayTeam.team_name}`)
-				let msg = `✅ Alineaciones confirmados para *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*! ⚽️\n\n`
+				let msg = `✅ Onces confirmados en *${fixture.venue}* ⚽️\n\n`
 				
 				// home team			
-				msg += `*${fixture.homeTeam.team_name}*\n`
-				msg += '```\n'
-				msg += 'XI\n'
+				msg += `*${fixture.homeTeam.team_name}*  (${fixture.lineups[fixture.homeTeam.team_name].formation})\n`
+				msg += '_XI_\n'
 				const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
 				homeTeam.startXI.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `${number.padEnd(3)} ${player.player}\n`
+					msg += `*${player.pos}* ${player.player}\n`
 				})
-				msg += `\nSubs\n`
+				msg += `\n_Subs_\n`
 				homeTeam.substitutes.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `${number.padEnd(3)} ${player.player}\n`
+					msg += `*${player.pos}* ${player.player}\n`
 				})
-				msg += '```\n'
 				
 				// away team
-				msg += `\n*${fixture.awayTeam.team_name}*\n`
-				msg += '```\n'
-				msg += 'XI\n'
+				msg += `\n*${fixture.awayTeam.team_name}*  (${fixture.lineups[fixture.awayTeam.team_name].formation})\n`
+				msg += '_XI_\n'
 				const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
 				awayTeam.startXI.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `${number.padEnd(3)} ${player.player}\n`
+					msg += `*${player.pos}* ${player.player}\n`
 				})
-				msg += `\nSubs\n`
-				homeTeam.substitutes.forEach(function(player) {
+				msg += `\_nSubs_\n`
+				awayTeam.substitutes.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `${number.padEnd(3)} ${player.player}\n`
+					msg += `*${player.pos}* ${player.player}\n`
 				})
-				msg += '```\n'
 				
 				this.publish(msg)
 				.then(() => resolve(fixture))
@@ -138,8 +124,8 @@ var Publisher = {
 		console.log(`Run scheduled fixture ${id} ${new Date()}`)
 		
 		api.getFixtureById(id)
-		.then((fixture) => publishLineUps(fixture))
-		.catch(err => console.log(err));
+		.then((fixture) => Publisher.publishLineUps(fixture))
+		.catch(err => console.log(err))
 	},
 
 	scheduleFixturesPreview: function(fixtures) {
@@ -155,7 +141,12 @@ var Publisher = {
 			if (date.getTime() > now.getTime()) {
 				console.log(`Schedule fixture ${fixture.fixture_id} detail for ${date}`)
 				
-				const job = new CronJob(date, scheduledFixturePreview, fixture.fixture_id)
+				let work = Publisher.scheduledFixturePreview.bind(this, fixture.fixture_id)
+				const job = new CronJob({
+					cronTime: date,
+					onTick: work,
+					timeZome: `${process.env.TZ}`
+				});
 				job.start()
 			}
 		})
@@ -203,12 +194,22 @@ var Publisher = {
 	daily: function() {
 		console.log(`Running daily`)
 	
+		var roundFixtures = []
+		var roundOdds = []
+		
 		api.getCurrentRound()
 		.then((round) => api.getFixturesInRound(round))
-		.then((fixtures) => this.publishFirstDayOfRound(fixtures))
-		.then(() => api.getFixturesToday())
-		.then((fixtures) => this.publishFixtures(fixtures))
-		.then((fixtures) => this.scheduleFixturesPreview(fixtures))
+		.then((fixtures) => {
+			roundFixtures = fixtures
+			return api.getOdds(roundFixtures)
+		})
+		.then((odds) => {
+			roundOdds = odds
+			return this.publishFirstDayOfRound(roundFixtures, odds)
+		})
+		.then((roundFixtures) => api.getFixturesToday())
+		.then((today) => this.publishFixtures(today, roundOdds))
+		.then((today) => this.scheduleFixturesPreview(today))
 		.catch(err => console.log(err));
 	
 		this.scheduleJokeOfTheDay()
