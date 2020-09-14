@@ -11,12 +11,12 @@ class FootballApi {
 		this.league_id = 2833
 	}
 	
-	async getCached(name) {
+	async getSample(name) {
 		return new Promise((resolve, reject) => {
 			fs.readFile(`./resource/samples/${name}.json`)
 			.then((data) => JSON.parse(data))
 			.then((body) => resolve(body))
-			.catch(err => reject(err));			
+			.catch(err => reject(err));
 		});
 	}
 	
@@ -43,7 +43,7 @@ class FootballApi {
 		return new Promise((resolve, reject) => {
 			console.log(`get ${name} ${resource}`)
 			if (dbg) {
-				this.getCached(name)
+				this.getSample(name)
 				.then((data) => resolve(data))
 				.catch(err => reject(err));
 			} else {
@@ -106,6 +106,16 @@ class FootballApi {
 			})
 			.catch(err => reject(err));
 		})
+	}
+
+	async getOdds() {
+		return new Promise((resolve, reject) => {
+			this.get('odds', `odds/league/${this.league_id}/bookmaker/6`)
+			.then(function(response) {
+				resolve(response.api.odds)
+			})
+			.catch(err => reject(err));
+		});
 	}
 }
 

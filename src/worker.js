@@ -1,3 +1,3 @@
-const publisher = require('./lib/publisher')
+const publisher = require('./lib/publisher').Publisher
 
 publisher.start()
