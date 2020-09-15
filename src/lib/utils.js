@@ -3,6 +3,11 @@ var Utils = {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
 	},
 	
+	normalizeUnicode: function(unicode) {
+		var combining = /[\u0300-\u036F]/g;
+		return unicode.normalize('NFKD').replace(combining, '')
+	},
+
 	formatFixture: function(fixture, odds) {
 		let msg = `⚽️ *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*\n`
 		const date = new Date(fixture.event_date)
@@ -31,6 +36,18 @@ var Utils = {
 		}
 
 		return msg
+	}
+};
+
+var Mister = {
+	getColor: function(colorId) {
+		switch (colorId) {
+		case 0: return 'gray'
+		case 1: return 'red'
+		case 2: return 'yellow'
+		case 3: return 'green'
+		case 4: return 'blue'
+		}
 	}
 };
 
