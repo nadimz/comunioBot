@@ -8,7 +8,7 @@ class FootballApi {
 		this.token = token
 		this.url   = 'https://api-football-v1.p.rapidapi.com/v2'
 		this.timezone = process.env.TZ		
-		this.league_id = 2833
+		this.league_id = process.env.LEAGUE_ID
 	}
 	
 	async getSample(name) {

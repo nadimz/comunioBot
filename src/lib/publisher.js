@@ -4,10 +4,13 @@ const Extra    = require('telegraf/extra')
 const CronJob  = require("cron").CronJob;
 
 const FootballApi = require('./footballApi').FootballApi
+const Mister = require('./mister').Mister
 const utils = require('./utils').Utils
 
 const api = new FootballApi(process.env.FOOTBALL_API_KEY)
 const bot = new Telegraf(process.env.BOT_TOKEN)
+
+const mister = new Mister(process.env.MISTER_LOGIN)
 
 const chatId = process.env.CHAT_ID
 
@@ -85,30 +88,38 @@ var Publisher = {
 				
 				// home team			
 				msg += `*${fixture.homeTeam.team_name}*  (${fixture.lineups[fixture.homeTeam.team_name].formation})\n`
-				msg += '_XI_\n'
+				msg += 'XI\n'
 				const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
-				homeTeam.startXI.forEach(function(player) {
+				let startXi = homeTeam.startXI
+				startXi.sort(utils.sortPositions)
+				startXi.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `*${player.pos}* ${player.player}\n`
+					msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
 				})
-				msg += `\n_Subs_\n`
-				homeTeam.substitutes.forEach(function(player) {
+				msg += `\nSubs\n`
+				let substitutes = homeTeam.substitutes
+				substitutes.sort(utils.sortPositions)
+				substitutes.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `*${player.pos}* ${player.player}\n`
+					msg += `*${utils.getColorFromPosition(player.pos)}*  ${player.player}\n`
 				})
 				
 				// away team
 				msg += `\n*${fixture.awayTeam.team_name}*  (${fixture.lineups[fixture.awayTeam.team_name].formation})\n`
-				msg += '_XI_\n'
+				msg += 'XI\n'
 				const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
-				awayTeam.startXI.forEach(function(player) {
+				startXi = awayTeam.startXI
+				startXi.sort(utils.sortPositions)
+				startXi.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `*${player.pos}* ${player.player}\n`
+					msg += `*${utils.getColorFromPosition(player.pos)}*  ${player.player}\n`
 				})
-				msg += `\_nSubs_\n`
-				awayTeam.substitutes.forEach(function(player) {
+				msg += `\nSubs\n`
+				substitutes = awayTeam.substitutes
+				substitutes.sort(utils.sortPositions)
+				substitutes.forEach(function(player) {
 					let number = (player.number).toString() + '.'
-					msg += `*${player.pos}* ${player.player}\n`
+					msg += `*${utils.getColorFromPosition(player.pos)}*  ${player.player}\n`
 				})
 				
 				this.publish(msg)
@@ -120,12 +131,83 @@ var Publisher = {
 		});
 	},
 
-	scheduledFixturePreview: async function(id) {	
-		console.log(`Run scheduled fixture ${id} ${new Date()}`)
+	scheduledFixturePoints: async function(fixture) {
+		console.log(`Run scheduled fixture ${fixture.fixture_id} points ${new Date()}`)
 		
-		api.getFixtureById(id)
+		const gameweek = await mister.getGameWeek()
+		let matchId = 0
+		let idHome = 0
+		let idAway = 0
+		gameweek.data.matches.forEach(function(match) {
+			const home = fixture.homeTeam.team_name.indexOf(utils.normalizeUnicode(match.home))
+			const away = fixture.awayTeam.team_name.indexOf(utils.normalizeUnicode(match.away))
+
+			if (home >= 0 && away >= 0) {				
+				matchId = match.id
+				console.log(`match! ${matchId}`)
+				idHome = match.id_home
+				idAway = match.id_away
+			}
+		})
+		
+		if (gameweek.data.players) {
+			let msg = `💹 Las puntaciones del *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}* ya están disponibles ⚽\n\n`
+
+			console.log(`${fixture.homeTeam.team_name}`)
+			msg += `*${fixture.homeTeam.team_name}*\n`
+			gameweek.data.players[`${matchId}`].all[`${idHome}`].forEach(function(player) {
+				console.log(`${player.name}: ${player.points}`)
+				const points = player.points.toString()
+				msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+			})
+
+			console.log(`${fixture.awayTeam.team_name}`)
+			msg += `\n*${fixture.homeTeam.team_name}*\n`
+			gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
+				console.log(`${player.name}: ${player.points}`)
+				const points = player.points.toString()
+				msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+			})
+			
+			bot.telegram.sendMessage(chatId, msg, Extra.markdown())
+		} else {
+			fixture.pointsRetry = fixture.pointsRetry + 1
+			let date = new Date()
+			date.setMinutes(date.getMinutes() + 5)
+
+			console.log(`Schedule fixture ${fixture.fixture_id} points for ${date} retry ${fixture.pointsRetry}`)
+
+			let work = Publisher.scheduledFixturePoints.bind(this, fixture)
+			const job = new CronJob({
+				cronTime: date,
+				onTick: work,
+				timeZome: `${process.env.TZ}`
+			});
+			job.start()	
+		}
+	},
+
+	scheduledFixturePreview: async function(fixture) {	
+		console.log(`Run scheduled fixture ${fixture.fixture_id} detail ${new Date()}`)
+		
+		api.getFixtureById(fixture.fixture_id)
 		.then((fixture) => Publisher.publishLineUps(fixture))
 		.catch(err => console.log(err))
+
+		let date = new Date(fixture.event_date)
+		date.setMinutes(date.getMinutes() + 45 + 15 + 45 + 5)
+
+		console.log(`Schedule fixture ${fixture.fixture_id} points for ${date}`)
+
+		fixture.pointsRetry = 0
+
+		let work = Publisher.scheduledFixturePoints.bind(this, fixture)
+		const job = new CronJob({
+			cronTime: date,
+			onTick: work,
+			timeZome: `${process.env.TZ}`
+		});
+		job.start()
 	},
 
 	scheduleFixturesPreview: function(fixtures) {
@@ -141,7 +223,7 @@ var Publisher = {
 			if (date.getTime() > now.getTime()) {
 				console.log(`Schedule fixture ${fixture.fixture_id} detail for ${date}`)
 				
-				let work = Publisher.scheduledFixturePreview.bind(this, fixture.fixture_id)
+				let work = Publisher.scheduledFixturePreview.bind(this, fixture)
 				const job = new CronJob({
 					cronTime: date,
 					onTick: work,
@@ -191,9 +273,11 @@ var Publisher = {
 		job.start()
 	},
 
-	daily: function() {
+	daily: async function() {
 		console.log(`Running daily`)
-	
+			
+		mister.changeCommunity(process.env.MISTER_COMMUNITY_ID)		
+
 		var roundFixtures = []
 		var roundOdds = []
 		
@@ -211,9 +295,9 @@ var Publisher = {
 		.then((today) => this.publishFixtures(today, roundOdds))
 		.then((today) => this.scheduleFixturesPreview(today))
 		.catch(err => console.log(err));
-	
+
 		this.scheduleJokeOfTheDay()
-	
+
 		this.scheduleDaily()
 	},
 

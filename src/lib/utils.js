@@ -8,6 +8,54 @@ var Utils = {
 		return unicode.normalize('NFKD').replace(combining, '')
 	},
 
+	getColorFromId: function(colorId) {
+		switch (colorId) {
+		case 0: return '⚪️' //gray
+		case 1: return '🔴'  //red
+		case 2: return '🟡' //yello
+		case 3: return '🟢' //green
+		case 4: return '🔵' //blue
+		}
+	},
+
+	getColorFromPosition: function(position) {
+		switch (position) {
+		case 'G': return '🟡'  //yello
+		case 'D': return '🔵' //blue
+		case 'M': return '🟢'  //green
+		case 'F': return '🔴' //red
+		}
+	},
+
+	sortPositions: function(a, b) {
+		switch(a.pos) {
+		case 'G':
+			switch(b.pos) {
+			case 'D': return -1
+			case 'M': return -1
+			case 'F': return -1
+			}
+		case 'D':
+			switch(b.pos) {
+			case 'G': return  1
+			case 'M': return -1
+			case 'F': return -1
+			}
+		case 'M':
+			switch(b.pos) {
+			case 'G': return  1
+			case 'D': return  1
+			case 'F': return -1
+			}
+		case 'F':
+			switch(b.pos) {
+			case 'G': return 1
+			case 'D': return 1
+			case 'M': return 1
+			}
+		}
+	},
+
 	formatFixture: function(fixture, odds) {
 		let msg = `⚽️ *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*\n`
 		const date = new Date(fixture.event_date)
@@ -36,18 +84,6 @@ var Utils = {
 		}
 
 		return msg
-	}
-};
-
-var Mister = {
-	getColor: function(colorId) {
-		switch (colorId) {
-		case 0: return 'gray'
-		case 1: return 'red'
-		case 2: return 'yellow'
-		case 3: return 'green'
-		case 4: return 'blue'
-		}
 	}
 };
 
