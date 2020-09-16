@@ -70,7 +70,7 @@ var Utils = {
 					entry.bookmakers[0].bets.forEach(function(bet) {
 						if (bet.label_id == 1) {
 							oddsAvailable = true
-							msg += `  💰 Bwin: (1) ${bet.values[0].odd}  (X) ${bet.values[1].odd}  (2) ${bet.values[2].odd}\n\n`
+							msg += `  💰 Bwin: *1:* ${bet.values[0].odd}  *X:* ${bet.values[1].odd}  *2:* ${bet.values[2].odd}\n\n`
 						}
 					})							
 				}
