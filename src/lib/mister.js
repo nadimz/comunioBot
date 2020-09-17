@@ -4,9 +4,10 @@ const fs    = require('fs').promises;
 const dbg = process.env.DEBUG
 
 class Mister {
-    constructor(login) {
+    constructor(login, community) {
         this.url = 'https://mister.mundodeportivo.com'
         this.login = login    
+        this.community = community
     }
 
     async getSample(name) {
@@ -58,10 +59,8 @@ class Mister {
         }        
     }
 
-    async changeCommunity(community) {
-        this.community = community
-
-        const response = await this.get(`/action/change?id_community=${community}`)
+    async changeCommunity() {
+        const response = await this.get(`/action/change?id_community=${this.community}`)
         this.authToken = await this.getAuthToken()
     }
 
@@ -80,6 +79,8 @@ class Mister {
     }
 
     async getGameWeek() {
+        await this.changeCommunity(this.community)
+
         return new Promise((resolve, reject) => {
             const params = new URLSearchParams();
             params.append('post', 'gameweek');

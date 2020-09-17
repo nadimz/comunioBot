@@ -5,7 +5,8 @@ var Utils = {
 	
 	normalizeUnicode: function(unicode) {
 		var combining = /[\u0300-\u036F]/g;
-		return unicode.normalize('NFKD').replace(combining, '')
+		unicode.normalize('NFKD').replace(combining, '')
+		return unicode.replace('-', ' ')
 	},
 
 	getColorFromId: function(colorId) {

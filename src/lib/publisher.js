@@ -151,29 +151,43 @@ var Publisher = {
 		})
 		
 		if (gameweek.data.players) {
-			let msg = `💹 Las puntaciones del *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}* ya están disponibles ⚽\n\n`
+			try {			
+				let msg = `💹 Las puntaciones del *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}* ya están disponibles ⚽\n\n`
 
-			console.log(`${fixture.homeTeam.team_name}`)
-			msg += `*${fixture.homeTeam.team_name}*\n`
-			gameweek.data.players[`${matchId}`].all[`${idHome}`].forEach(function(player) {
-				console.log(`${player.name}: ${player.points}`)
-				const points = player.points.toString()
-				msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
-			})
+				console.log(`${fixture.homeTeam.team_name}`)
+				msg += `*${fixture.homeTeam.team_name}*\n`
+				gameweek.data.players[`${matchId}`].all[`${idHome}`].forEach(function(player) {
+					console.log(`${player.name}: ${player.points}`)
+					const points = player.points.toString()
+					if (points === '?') {
+						throw 'player rating not ready'
+					}
+					msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+				})
 
-			console.log(`${fixture.awayTeam.team_name}`)
-			msg += `\n*${fixture.homeTeam.team_name}*\n`
-			gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
-				console.log(`${player.name}: ${player.points}`)
-				const points = player.points.toString()
-				msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
-			})
-			
-			bot.telegram.sendMessage(chatId, msg, Extra.markdown())
-		} else {
-			fixture.pointsRetry = fixture.pointsRetry + 1
+				console.log(`${fixture.awayTeam.team_name}`)
+				msg += `\n*${fixture.homeTeam.team_name}*\n`
+				gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
+					console.log(`${player.name}: ${player.points}`)
+					const points = player.points.toString()
+					if (points === '?') {
+						throw 'player rating not ready'
+					}
+					msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+				})
+				
+				bot.telegram.sendMessage(chatId, msg, Extra.markdown())
+				return
+			}
+			catch (err) {
+				console.log(`err at ${new Date()}`)
+			}
+		}
+
+		fixture.pointsRetry = fixture.pointsRetry + 1
+		if (fixture.pointsRetry < 20) {
 			let date = new Date()
-			date.setMinutes(date.getMinutes() + 5)
+			date.setMinutes(date.getMinutes() + 2)
 
 			console.log(`Schedule fixture ${fixture.fixture_id} points for ${date} retry ${fixture.pointsRetry}`)
 
@@ -184,7 +198,7 @@ var Publisher = {
 				timeZome: `${process.env.TZ}`
 			});
 			job.start()	
-		}
+		}		
 	},
 
 	scheduledFixturePreview: async function(fixture) {	
@@ -274,9 +288,7 @@ var Publisher = {
 	},
 
 	daily: async function() {
-		console.log(`Running daily`)
-			
-		mister.changeCommunity(process.env.MISTER_COMMUNITY_ID)		
+		console.log(`Running daily`)			
 
 		var roundFixtures = []
 		var roundOdds = []
