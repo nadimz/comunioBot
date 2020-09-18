@@ -4,10 +4,10 @@ const fs    = require('fs').promises;
 const dbg = process.env.DEBUG
 
 class Mister {
-    constructor(login, community) {
+    constructor(community) {
         this.url = 'https://mister.mundodeportivo.com'
-        this.login = login    
         this.community = community
+        this.cookies = ''
     }
 
     async getSample(name) {
@@ -23,10 +23,9 @@ class Mister {
         const options = {
 			"method": "GET",
 			"headers": {
-                    "Cookie": `login=${this.login}`
+                    "Cookie": `${this.cookies}`
 				}	
         }
-        
         return await fetch(`${this.url}/${resource}`, options);
     }
 
@@ -43,7 +42,7 @@ class Mister {
         const options = {
 			"method": "POST",
 			"headers": {
-                    "Cookie": `login=${this.login}`,
+                    "Cookie": `${this.cookies}`,
                     "X-Auth": `${this.authToken}`,
                     "X-Requested-With": "XMLHttpRequest",
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
@@ -60,13 +59,13 @@ class Mister {
     }
 
     async changeCommunity() {
-        const response = await this.get(`/action/change?id_community=${this.community}`)
+        const response = await this.get(`action/change?id_community=${this.community}`)
         this.authToken = await this.getAuthToken()
     }
 
     async getAuthToken() {
         return new Promise((resolve, reject) => {
-            this.get('/feed')
+            this.get('feed')
             .then((response) => response.text())
             .then((body) => {
                 var idx = body.search('"auth"')
@@ -76,6 +75,35 @@ class Mister {
             })
             .catch((err) => reject(err))
         })
+    }
+
+    getCookies(response) {
+        var cookies = ''
+        var raw = response.headers.raw()['set-cookie']
+        raw.forEach(function(cookie) {
+          var split = cookie.split(';')          
+          cookies += split[0] + '; '
+        })
+        console.log(cookies)
+        return cookies
+    }
+
+    async login(email, password) {
+        const body = `{"method":"email","email":"${email}","password":"${password}"}`
+         const options = {
+			"method": "POST",			
+            "headers": {
+                    "Content-Type": "application/json"
+                },
+            "body": body	
+        }
+
+        const response = await fetch('https://mister.mundodeportivo.com/api2/auth/signin/email', options)
+        if (response.status == 200) {
+            this.cookies = this.getCookies(response)
+        }
+            
+        return response
     }
 
     async getGameWeek() {

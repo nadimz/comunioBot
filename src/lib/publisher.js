@@ -10,7 +10,7 @@ const utils = require('./utils').Utils
 const api = new FootballApi(process.env.FOOTBALL_API_KEY)
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-const mister = new Mister(process.env.MISTER_LOGIN)
+const mister = new Mister(process.env.MISTER_COMMUNITY_ID)
 
 const chatId = process.env.CHAT_ID
 
@@ -289,6 +289,8 @@ var Publisher = {
 
 	daily: async function() {
 		console.log(`Running daily`)			
+		
+		await mister.login(process.env.MISTER_EMAIL, process.env.MISTER_PASSWORD)
 
 		var roundFixtures = []
 		var roundOdds = []
