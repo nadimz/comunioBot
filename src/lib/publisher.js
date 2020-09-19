@@ -156,10 +156,10 @@ var Publisher = {
 
 				console.log(`${fixture.homeTeam.team_name}`)
 				msg += `*${fixture.homeTeam.team_name}*\n`
-				gameweek.data.players[`${matchId}`].all[`${idHome}`].forEach(function(player) {
+				gameweek.data.players[`${matchId}`].all[`${idHome}`].forEach(function(player) {					
 					console.log(`${player.name}: ${player.points}`)
 					const points = player.points.toString()
-					if (points === '?') {
+					if (points === '"?"') {
 						throw 'player rating not ready'
 					}
 					msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
@@ -170,7 +170,7 @@ var Publisher = {
 				gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
 					console.log(`${player.name}: ${player.points}`)
 					const points = player.points.toString()
-					if (points === '?') {
+					if (points === '"?"') {
 						throw 'player rating not ready'
 					}
 					msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
@@ -185,7 +185,7 @@ var Publisher = {
 		}
 
 		fixture.pointsRetry = fixture.pointsRetry + 1
-		if (fixture.pointsRetry < 20) {
+		if (fixture.pointsRetry < 50) {
 			let date = new Date()
 			date.setMinutes(date.getMinutes() + 2)
 
