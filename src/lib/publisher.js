@@ -170,7 +170,7 @@ var Publisher = {
 				gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
 					console.log(`${player.name}: ${player.points}`)
 					const points = player.points.toString()
-					if (points === '"?"') {
+					if (points === '?') {
 						throw 'player rating not ready'
 					}
 					msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
