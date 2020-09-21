@@ -57,13 +57,31 @@ var Utils = {
 		}
 	},
 
+	getMonth: function(date) {
+		switch (date.getMonth()) {
+		case 0: return 'ENE'
+		case 1: return 'FEB'
+		case 2: return 'MAR'
+		case 3: return 'ABR'
+		case 4: return 'MAY'
+		case 5: return 'JUN'
+		case 6: return 'JUL'
+		case 7: return 'AGO'
+		case 8: return 'SEP'
+		case 9: return 'OCT'
+		case 10: return 'NOV'
+		case 11: return 'DIC'
+		}
+	},
+
 	formatFixture: function(fixture, odds) {
 		let msg = `⚽️ *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*\n`
 		const date = new Date(fixture.event_date)
 
 		if (fixture.statusShort != 'PST') {
+			const gameDate = date.getDate().toString() + ' ' + this.getMonth(date)
 			const time = date.getHours().toString().padEnd(2, '0') + ':' + date.getMinutes().toString().padEnd(2, '0')
-			msg += `  🕣 *${time}* ${fixture.venue}\n`
+			msg += `  🕣 *${gameDate} ${time}*\n`
 
 			let oddsAvailable = false
 			odds.forEach(function(entry) {						

@@ -185,9 +185,9 @@ var Publisher = {
 		}
 
 		fixture.pointsRetry = fixture.pointsRetry + 1
-		if (fixture.pointsRetry < 50) {
+		if (fixture.pointsRetry < 20) {
 			let date = new Date()
-			date.setMinutes(date.getMinutes() + 2)
+			date.setMinutes(date.getMinutes() + 5)
 
 			console.log(`Schedule fixture ${fixture.fixture_id} points for ${date} retry ${fixture.pointsRetry}`)
 
@@ -226,25 +226,27 @@ var Publisher = {
 
 	scheduleFixturesPreview: function(fixtures) {
 		fixtures.forEach(function(fixture) {
-			let date = new Date(fixture.event_date)
+			if (fixture.statusShort != "PST") {
+				let date = new Date(fixture.event_date)
 	
-			console.log(`Fixture ${fixture.fixture_id} today at ${date}`)
-	
-			date.setMinutes(date.getMinutes() - 10)
-	
-			let now = new Date()
-			
-			if (date.getTime() > now.getTime()) {
-				console.log(`Schedule fixture ${fixture.fixture_id} detail for ${date}`)
+				console.log(`Fixture ${fixture.fixture_id} today at ${date}`)
+		
+				date.setMinutes(date.getMinutes() - 10)
+		
+				let now = new Date()
 				
-				let work = Publisher.scheduledFixturePreview.bind(this, fixture)
-				const job = new CronJob({
-					cronTime: date,
-					onTick: work,
-					timeZome: `${process.env.TZ}`
-				});
-				job.start()
-			}
+				if (date.getTime() > now.getTime()) {
+					console.log(`Schedule fixture ${fixture.fixture_id} detail for ${date}`)
+					
+					let work = Publisher.scheduledFixturePreview.bind(this, fixture)
+					const job = new CronJob({
+						cronTime: date,
+						onTick: work,
+						timeZome: `${process.env.TZ}`
+					});
+					job.start()
+				}	
+			}			
 		})
 	},
 
@@ -257,33 +259,6 @@ var Publisher = {
 		console.log(`Schedule next daily for ${date}`)
 		
 		const job = new CronJob(date, this.daily)
-		job.start()
-	},
-
-	scheduleJokeOfTheDay: async function() {
-		let date = new Date();
-		console.log(`now ${date}`)
-		const hours = utils.getRandomInt(date.getHours() + 1, 22)
-		const min   = utils.getRandomInt(1, 55)	
-		date.setHours(hours)
-		date.setMinutes(min)
-		
-		console.log(`Schedule joke of the day ${date}`)
-		
-		const job = new CronJob(date, function() {
-			console.log('fetch joke')
-			fetch('https://geek-jokes.sameerkumar.website/api?format=json')
-			.then((response) => response.json())
-			.then((body) => {			
-				let msg = '😂 *Joke of the day*\n\n'
-				msg += `${body.joke}`
-				this.publish(msg)
-			})
-			.catch((err) => function() {
-				console.log(err)
-			})
-		})
-	
 		job.start()
 	},
 
@@ -309,8 +284,6 @@ var Publisher = {
 		.then((today) => this.publishFixtures(today, roundOdds))
 		.then((today) => this.scheduleFixturesPreview(today))
 		.catch(err => console.log(err));
-
-		this.scheduleJokeOfTheDay()
 
 		this.scheduleDaily()
 	},
