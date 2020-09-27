@@ -81,23 +81,7 @@ var Utils = {
 		if (fixture.statusShort != 'PST') {
 			const gameDate = date.getDate().toString() + ' ' + this.getMonth(date)
 			const time = date.getHours().toString().padEnd(2, '0') + ':' + date.getMinutes().toString().padEnd(2, '0')
-			msg += `  🕣 *${gameDate} ${time}*\n`
-
-			let oddsAvailable = false
-			odds.forEach(function(entry) {						
-				if (entry.fixture.fixture_id == fixture.fixture_id) {
-					entry.bookmakers[0].bets.forEach(function(bet) {
-						if (bet.label_id == 1) {
-							oddsAvailable = true
-							msg += `  💰 Bwin: *1:* ${bet.values[0].odd}  *X:* ${bet.values[1].odd}  *2:* ${bet.values[2].odd}\n\n`
-						}
-					})							
-				}
-			})
-
-			if (oddsAvailable == false) {
-				msg += `  💰 Bwin: Not available\n\n`
-			}
+			msg += `  🕣 *${gameDate} ${time}*\n\n`
 		} else {
 			msg += `  🕣 *Aplazado*\n\n`
 		}

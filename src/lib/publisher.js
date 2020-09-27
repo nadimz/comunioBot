@@ -48,7 +48,7 @@ var Publisher = {
 		return new Promise((resolve, reject) => {
 			if (fixtures.length > 0) {
 				console.log('Publish fixtures today')
-				var msg = '❇️ *Otro día de fútbol!*\n\n'
+				var msg = '❇️ *Partidos hoy:*\n\n'
 
 				fixtures.forEach(function(fixture) {
 					msg += utils.formatFixture(fixture, odds)
@@ -166,7 +166,7 @@ var Publisher = {
 				})
 
 				console.log(`${fixture.awayTeam.team_name}`)
-				msg += `\n*${fixture.homeTeam.team_name}*\n`
+				msg += `\n*${fixture.awayTeam.team_name}*\n`
 				gameweek.data.players[`${matchId}`].all[`${idAway}`].forEach(function(player) {
 					console.log(`${player.name}: ${player.points}`)
 					const points = player.points.toString()
@@ -257,8 +257,13 @@ var Publisher = {
 		date.setMinutes(15)
 		
 		console.log(`Schedule next daily for ${date}`)
-		
-		const job = new CronJob(date, this.daily)
+
+		let work = Publisher.daily.bind(this)
+		const job = new CronJob({
+			cronTime: date,
+			onTick: work,
+			timeZome: `${process.env.TZ}`
+		});
 		job.start()
 	},
 
