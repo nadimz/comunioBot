@@ -6,5 +6,12 @@
 		"fs-promise": "^2.0.3",
 		"node-fetch": "^2.6.1",
 		"telegraf": "^3.38.0"
+	},
+	"devDependencies": {
+		"express": "^4.17.1",
+		"jest": "^26.4.2"
+	},
+	"scripts": {
+		"test": "jest"
 	}
 }

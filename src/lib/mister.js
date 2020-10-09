@@ -1,44 +1,27 @@
 const fetch = require('node-fetch')
-const fs    = require('fs').promises;
+const config = require('./config')
 
-const dbg = process.env.DEBUG
-
-class Mister {
+exports.Mister = class Mister {
     constructor(community) {
-        this.url = 'https://mister.mundodeportivo.com'
+        this.url = config.misterUrl
         this.community = community
         this.cookies = ''
     }
-
-    async getSample(name) {
-		return new Promise((resolve, reject) => {
-			fs.readFile(`./resource/samples/${name}.json`)
-			.then((data) => JSON.parse(data))
-			.then((body) => resolve(body))
-			.catch(err => reject(err));
-		});
-    }
     
-    async get(resource) {
+    async get(endpoint) {
         const options = {
 			"method": "GET",
 			"headers": {
                     "Cookie": `${this.cookies}`
 				}	
         }
-        return await fetch(`${this.url}/${resource}`, options);
+
+        const url = `${this.url}/${endpoint}`
+        console.log(`fetch ${url}`)
+        return fetch(url, options);
     }
 
-    async getSample(name) {
-        return new Promise((resolve, reject) => {
-            fs.readFile(`./resource/samples/${name}.json`)
-            .then((data) => JSON.parse(data))
-            .then((body) => resolve(body))
-            .catch(err => reject(err));
-        });
-    }
-
-    async post(endpoit, resource, params) {
+    async post(endpoint, params) {
         const options = {
 			"method": "POST",
 			"headers": {
@@ -49,13 +32,35 @@ class Mister {
                 },
             "body": params	
         }
+        
+        const url = `${this.url}/${endpoint}`
+        console.log(`fetch ${url}`)
+        return fetch(url, options)            
+    }
 
-        if (dbg) {
-            return await this.getSample(endpoit)
-        } else {
-            const response = await fetch(`${this.url}/${resource}`, options)            
-            return response.json()
-        }        
+    async getAuthToken() {
+        return this.get('feed')
+            .then((response) => response.text())
+            .then((body) => {
+                var idx = body.search('"auth"')
+                var authToken = body.substr(idx + 8, 32)
+                console.log(`X-Auth: ${authToken}`)
+                return authToken
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+
+    getCookies(response) {
+        var cookies = ''
+        let setCookies = response.headers.raw()['set-cookie']
+        for (let i = 0; i < setCookies.length; i++) {
+            var split = setCookies[i].split(';')          
+            cookies += split[0] + '; '
+        }
+        console.log(cookies)
+        return cookies
     }
 
     async changeCommunity() {
@@ -63,34 +68,9 @@ class Mister {
         this.authToken = await this.getAuthToken()
     }
 
-    async getAuthToken() {
-        return new Promise((resolve, reject) => {
-            this.get('feed')
-            .then((response) => response.text())
-            .then((body) => {
-                var idx = body.search('"auth"')
-                var authToken = body.substr(idx + 8, 32)
-                console.log(`X-Auth: ${authToken}`)
-                resolve(authToken)            
-            })
-            .catch((err) => reject(err))
-        })
-    }
-
-    getCookies(response) {
-        var cookies = ''
-        var raw = response.headers.raw()['set-cookie']
-        raw.forEach(function(cookie) {
-          var split = cookie.split(';')          
-          cookies += split[0] + '; '
-        })
-        console.log(cookies)
-        return cookies
-    }
-
     async login(email, password) {
         const body = `{"method":"email","email":"${email}","password":"${password}"}`
-         const options = {
+        const options = {
 			"method": "POST",			
             "headers": {
                     "Content-Type": "application/json"
@@ -98,7 +78,8 @@ class Mister {
             "body": body	
         }
 
-        const response = await fetch('https://mister.mundodeportivo.com/api2/auth/signin/email', options)
+        const url = `${config.misterUrl}/api2/auth/signin/email`        
+        const response = await fetch(url, options)
         if (response.status == 200) {
             this.cookies = this.getCookies(response)
         }
@@ -108,17 +89,15 @@ class Mister {
 
     async getGameWeek() {
         await this.changeCommunity(this.community)
-
-        return new Promise((resolve, reject) => {
-            const params = new URLSearchParams();
-            params.append('post', 'gameweek');
-            this.post('gameweek', '/ajax/sw', params)
-            .then((body) => resolve(body))
-            .catch((err) => reject(err))
-        })
+        const params = new URLSearchParams();
+        params.append('post', 'gameweek');
+        return this.post('/ajax/sw', params)
+            .then((response) => response.json())
+            .then((body) => {
+                return body
+            })
+            .catch((err) => {
+                throw err
+            })
     }
-}
-
-module.exports = {
-    Mister: Mister
 }
