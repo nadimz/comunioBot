@@ -1,14 +1,16 @@
 const config   = require('./lib/config')
 const football = require('./lib/api-football')
 
+const Fixture  = require('./fixture').Fixture
+
 exports.Round = class Round {
     event = {
         Null: 'null' // placeholder
-    }   
+    }
 
     constructor (roundId) {
         /**
-         * Don't be called directly! Use build() instead.
+         * Musn't be called directly! Use build() instead.
          * The object needs to execute async operations
          * before being ready
          */
@@ -28,8 +30,8 @@ exports.Round = class Round {
         }
     }
 
-    static async build(roundId) {        
-        const object = new Round(roundId)        
+    static async build(roundId) {
+        const object = new Round(roundId)
         await object._work()
         return object
     }
@@ -44,32 +46,28 @@ exports.Round = class Round {
     }
 
     isFirstDay() {
-        var earliestGame = new Date(this.fixtures[0].event_date)
-		
+        var earliestGame = new Date(this.fixtures[0].date)
+
 		this.fixtures.forEach(function(fixture) {
-			const d = new Date(fixture.event_date)
+			const d = new Date(fixture.date)
 			if (d.getTime() < earliestGame.getTime()) {
 				earliestGame = d
 			}
 		})
-		
+
 		var today = new Date()
-		
+
 		if ((today.getDate() == earliestGame.getDate()) &&
 			(today.getMonth() == earliestGame.getMonth())){
 			console.log('First day of round')
 			return true
-		}        
-        
+		}
+
 		return false
     }
 
-    /**
-     * Returns api-football fixtures response model
-     * (https://www.api-football.com/documentation#fixtures-fixtures)
-     */
-    async getFixtures() {
-        return football.getFixturesByRound(this.id)
+    getFixtures() {
+        return this.fixtures
     }
 
     _onEvent(event, arg) {
@@ -90,17 +88,31 @@ exports.Round = class Round {
                     console.log(err);
                 }
             })
-        }        
-        
+        }
+
         next()
     }
 
     async _work() {
         return football.getFixturesByRound(this.id)
-            .then((data) => {
-                this.fixtures = data.api.fixtures
+            .then(async (data) => {
+                if (data.api.results) {
+                    const buildFixtures = async (fixtures) => {
+                        for (const fixture of fixtures) {
+                            const item = await Fixture.build(fixture.fixture_id)
+                                .catch((err) => {throw err})
+
+                            this.fixtures.push(item)
+                        }
+                    }
+
+                    await buildFixtures(data.api.fixtures)
+
+                    return
+                }
+
                 return
-            })        
+            })
             .catch((err) => 'Cannot create round: ' + err)
     }
 }

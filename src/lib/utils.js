@@ -1,7 +1,7 @@
 exports.getRandomInt = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
-	
+
 exports.normalizeUnicode = (unicode) => {
 	var combining = /[\u0300-\u036F]/g;
 	unicode.normalize('NFKD').replace(combining, '')
@@ -73,9 +73,9 @@ exports.getMonth = (date) => {
 	}
 }
 
-exports.formatFixture = (fixture, odds) => {
-	let msg = `⚽️ *${fixture.homeTeam.team_name}* vs *${fixture.awayTeam.team_name}*\n`
-	const date = new Date(fixture.event_date)
+exports.formatFixture = (fixture) => {
+	let msg = `⚽️ *${fixture.homeTeam.name}* vs *${fixture.awayTeam.name}*\n`
+	const date = new Date(fixture.date)
 
 	if (fixture.statusShort != 'PST') {
 		const gameDate = date.getDate().toString() + ' ' + this.getMonth(date)

@@ -1,6 +1,8 @@
 const config   = require('./lib/config')
 const football = require('./lib/api-football')
 
+const CronJob  = require("cron").CronJob;
+
 exports.Fixture = class Fixture {
     event = {
         lineups: 'Lineups' // lineups annouced
@@ -8,7 +10,7 @@ exports.Fixture = class Fixture {
 
     constructor(fixtureId) {        
         /**
-         * Don't be called directly! Use build() instead.
+         * Musn't be called directly! Use build() instead.
          * The object needs to execute async operations
          * before being ready
          */
@@ -18,8 +20,9 @@ exports.Fixture = class Fixture {
          */
         this.id = fixtureId
         
-        this.venue = ''
-        this.date  = undefined
+        this.status = ''
+        this.venue  = ''
+        this.date   = undefined
 
         // home team
         this.homeTeam = {
@@ -89,10 +92,35 @@ exports.Fixture = class Fixture {
     async _work() {
         return football.getFixtureById(this.id)
             .then((data) => {
-                this.venue = data.api.fixtures[0].venue
+                /**
+                 * Update fixture data
+                 */
+                this.status = data.api.fixtures[0].statusShort 
+                this.date   = new Date(data.api.fixtures[0].event_date)
+                this.venue  = data.api.fixtures[0].venue
                 
                 this.homeTeam.name = data.api.fixtures[0].homeTeam.team_name
                 this.awayTeam.name = data.api.fixtures[0].awayTeam.team_name
+                
+                /**
+                 * Schedule next work
+                 */
+                let now  = new Date()
+                let date = new Date(this.date)
+                
+                date.setMinutes(date.getMinutes() - 10)
+                
+                if (date.getTime() > now.getTime()) {
+					console.log(`Schedule fixture ${this.id} detail for ${date}`)
+					
+					const job = new CronJob({
+						cronTime: date,
+						onTick: this._work,
+						timeZome: `${process.env.TZ}`
+                    });
+                    
+					job.start()
+                }
                 
                 return
             })

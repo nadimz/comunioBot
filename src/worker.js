@@ -10,24 +10,38 @@ const bot = new Telegraf(config.tgramBotToken)
 
 const league = new League()
 
-async function publish(msg) {
+const publish = async (msg) => {
     return bot.telegram.sendMessage(config.chatId, msg, Extra.markdown())
 }
 
+const addFixtures = (msg, fixtures) => {
+    for (const fixture of fixtures) {
+        msg += utils.formatFixture(fixture)
+    }
+
+    return msg
+}
+
 league.on(league.event.newRound, async (round, next) => {
-    round.getFixtures()
-    .then((data) => {
-        const fixtures = data.api.fixtures
+    const fixtures = round.getFixtures()
 
-        console.log('Publish first day of round')
-        var msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy!* ⚽️\n\n'
-        
-        fixtures.forEach(function(fixture) {
-            msg += utils.formatFixture(fixture)
-        })
+    console.log('Publish first day of round')
+    let msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy!* ⚽️\n\n'
+
+    publish(addFixtures(msg, fixtures))
+    .catch((err) => {
+        console.log(err)
     })
+    .finally(() => next())
+})
 
-    await publish(msg)
+league.on(league.event.gameDay, async (fixtures, next) => {
+    console.log('Publish fixtures today')
+    let msg = '❇️ *Partidos hoy:*\n\n'
 
-    next()
+    publish(addFixtures(msg, fixtures))
+    .catch((err) => {
+        console.log(err)
+    })
+    .finally(() => next())
 })
