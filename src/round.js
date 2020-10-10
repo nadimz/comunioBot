@@ -32,7 +32,20 @@ exports.Round = class Round {
 
     static async build(roundId) {
         const object = new Round(roundId)
-        await object._work()
+        const data = await football.getFixturesByRound(roundId)
+        if (data.api.results) {
+            const buildFixtures = async (fixtures) => {
+                for (const fixture of fixtures) {
+                    const item = await Fixture.build(fixture.fixture_id)
+                        .catch((err) => {throw err})
+
+                        object.fixtures.push(item)
+                }
+            }
+
+            await buildFixtures(data.api.fixtures)
+        }
+
         return object
     }
 
@@ -43,6 +56,10 @@ exports.Round = class Round {
         }
 
         this._middlewares[event].push(middleware)
+    }
+
+    followup() {
+        // placeholder
     }
 
     isFirstDay() {
@@ -91,28 +108,5 @@ exports.Round = class Round {
         }
 
         next()
-    }
-
-    async _work() {
-        return football.getFixturesByRound(this.id)
-            .then(async (data) => {
-                if (data.api.results) {
-                    const buildFixtures = async (fixtures) => {
-                        for (const fixture of fixtures) {
-                            const item = await Fixture.build(fixture.fixture_id)
-                                .catch((err) => {throw err})
-
-                            this.fixtures.push(item)
-                        }
-                    }
-
-                    await buildFixtures(data.api.fixtures)
-
-                    return
-                }
-
-                return
-            })
-            .catch((err) => 'Cannot create round: ' + err)
     }
 }

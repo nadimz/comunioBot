@@ -175,6 +175,8 @@ test('[Comunio] New round & gameday', (done) => {
         next()
         done()
     })
+
+    league.followup()
 });
 
 test('[Comunio] Gameday in existent round', (done) => {
@@ -380,4 +382,124 @@ test('[Comunio] Gameday in existent round', (done) => {
         next()
         done()
     })
+
+    league.followup()
 });
+
+test('[Comunio] Fixture events', (done) => {
+    /**
+     * Prepare test data
+     */
+    const rounds =
+    `{
+        "api":{
+            "results": 1,
+            "fixtures": [
+                "${testData.roundId}"
+            ]
+        }
+    }`
+
+    handlers.currentRound = (req, res) => {
+        res.send(rounds)
+    }
+
+    const venue       = 'Venue'
+    const homeTeam    = 'HomeTeam'
+    const awayTeam    = 'AwayTeam'
+    const homePlayer  = 'HomePlayer'
+    const awayPlayer  = 'AwayPlayer'
+    const homeSub     = 'HomeSub'
+    const awaySub     = 'AwaySub'
+
+    const fixtures =
+    {
+        api:
+        {
+            results: 1,
+            fixtures: [
+                {
+                    fixture_id: testData.fixtureId,
+                    event_date: new Date().toUTCString(),
+                    venue: venue,
+                    homeTeam: {
+                        team_name: homeTeam
+                    },
+                    awayTeam: {
+                        team_name: awayTeam
+                    },
+                    lineups: {
+                        HomeTeam: {
+                            startXI: [
+                                {
+                                    pos: "M",
+                                    player: homePlayer
+                                }
+                            ],
+                            substitutes: [
+                                {
+                                    pos: "D",
+                                    player: homeSub
+                                }
+                            ]
+                        },
+                        AwayTeam: {
+                            startXI: [
+                                {
+                                    pos: "M",
+                                    player: awayPlayer
+                                }
+                            ],
+                            substitutes: [
+                                {
+                                    pos: "D",
+                                    player: awaySub
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    handlers.fixturesByRound = (req, res) => {
+        res.send(JSON.stringify(fixtures))
+    }
+
+    handlers.fixturesByDate = (req, res) => {
+        res.send(JSON.stringify(fixtures))
+    }
+
+    handlers.fixtureById = (req, res) => {
+        res.send(JSON.stringify(fixtures))
+    }
+
+    /**
+     * Test
+     */
+    const league = new comunio.League()
+
+    league.on(league.event.gameDay, (gameDayFixtures) => {
+        const fixture = gameDayFixtures[0]
+        fixture.on(fixture.event.lineups, (fixture) => {
+            expect(fixture.homeTeam.name).toMatch(homeTeam)
+            expect(fixture.homeTeam.lineup[0].pos).toMatch('M')
+            expect(fixture.homeTeam.lineup[0].player).toMatch(homePlayer)
+            expect(fixture.homeTeam.substitutes[0].pos).toMatch('D')
+            expect(fixture.homeTeam.substitutes[0].player).toMatch(homeSub)
+
+            expect(fixture.awayTeam.name).toMatch(awayTeam)
+            expect(fixture.awayTeam.lineup[0].pos).toMatch('M')
+            expect(fixture.awayTeam.lineup[0].player).toMatch(awayPlayer)
+            expect(fixture.awayTeam.substitutes[0].pos).toMatch('D')
+            expect(fixture.awayTeam.substitutes[0].player).toMatch(awaySub)
+            done()
+        })
+
+        // trigger fixture update
+        fixture._waitingForLineups()
+    })
+
+    league.followup()
+})

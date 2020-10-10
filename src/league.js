@@ -27,7 +27,9 @@ exports.League = class League {
             'NewRound': [],
             'GameDay': [],
         }
+    }
 
+    followup() {
         this._work()
     }
 
@@ -93,7 +95,7 @@ exports.League = class League {
 
                 return
             })
-            //.catch((err) => console.log('Cannot create current round: ' + err))
+            .catch((err) => console.log('Cannot create current round: ' + err))
 
         /**
          * Game day
