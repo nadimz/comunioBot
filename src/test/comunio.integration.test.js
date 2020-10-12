@@ -183,18 +183,53 @@ test('[Comunio] Gameday in existent round', (done) => {
     /**
      * Prepare test data
      */
-    const rounds =
-    `{
-        "api":{
-            "results": 1,
-            "fixtures": [
-                "${testData.roundId}"
-            ]
+    const sampleRounds = {
+        api: {
+            results: 1,
+            fixtures: []
         }
-    }`
+    }
+
+    const sampleFixture1 = {
+        fixture_id: 'f1',
+        event_date: undefined,
+        venue: 'v1',
+        homeTeam: {
+            team_name: 'home1'
+        },
+        awayTeam: {
+            team_name: 'away1'
+        }
+    }
+
+    const sampleFixture2 = {
+        fixture_id: 'f2',
+        event_date: undefined,
+        venue: 'v2',
+        homeTeam: {
+            team_name: 'h2',
+        },
+        awayTeam: {
+            team_name: 'a2'
+        }
+    }
+
+    const sampleFixture3 = {
+        fixture_id: 'f3',
+        event_date: undefined,
+        venue: 'v3',
+        homeTeam: {
+            team_name: 'h3',
+        },
+        awayTeam: {
+            team_name: 'a3'
+        }
+    }
 
     handlers.currentRound = (req, res) => {
-        res.send(rounds)
+        let rounds = JSON.parse(JSON.stringify(sampleRounds));
+        rounds.api.fixtures.push(testData.roundId)
+        res.send(JSON.stringify(rounds))
     }
 
     const today     = new Date()
@@ -203,158 +238,75 @@ test('[Comunio] Gameday in existent round', (done) => {
     const yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
 
-    const fixtures =
-    {
-        api:
-        {
-            results: 3,
-            fixtures: [
-                {
-                    fixture_id: 'f1',
-                    event_date: yesterday.toUTCString(),
-                    venue: 'v1',
-                    homeTeam: {
-                        team_name: 'home1'
-                    },
-                    awayTeam: {
-                        team_name: 'away1'
-                    }
-                },
-                {
-                    fixture_id: 'f2',
-                    event_date: today.toUTCString(),
-                    venue: 'v2',
-                    homeTeam: {
-                        team_name: 'h2',
-                    },
-                    awayTeam: {
-                        team_name: 'a2'
-                    }
-                },
-                {
-                    fixture_id: 'f3',
-                    event_date: today.toUTCString(),
-                    venue: 'v3',
-                    homeTeam: {
-                        team_name: 'h3',
-                    },
-                    awayTeam: {
-                        team_name: 'a3'
-                    }
-                }
-            ]
-        }
-    }
+    const f1 = JSON.parse(JSON.stringify(sampleFixture1));
+    const f2 = JSON.parse(JSON.stringify(sampleFixture2));
+    const f3 = JSON.parse(JSON.stringify(sampleFixture3));
+
+    f1.event_date = yesterday.toUTCString()
+    f2.event_date = today.toUTCString()
+    f3.event_date = today.toUTCString()
 
     handlers.fixturesByRound = (req, res) => {
+        const fixtures = {
+            api: {
+                results: 3,
+                fixtures: [
+                    f1,
+                    f2,
+                    f3
+                ]
+            }
+        }
         res.send(JSON.stringify(fixtures))
     }
 
     handlers.fixturesByDate = (req, res) => {
-        const data =
-        {
-            api:
-            {
+        const fixtures = {
+            api: {
                 results: 2,
                 fixtures: [
-                    {
-                        fixture_id: 'f2',
-                        event_date: today.toUTCString(),
-                        venue: 'v2',
-                        homeTeam: {
-                            team_name: 'h2',
-                        },
-                        awayTeam: {
-                            team_name: 'a2'
-                        }
-                    },
-                    {
-                        fixture_id: 'f3',
-                        event_date: today.toUTCString(),
-                        venue: 'v3',
-                        homeTeam: {
-                            team_name: 'h3',
-                        },
-                        awayTeam: {
-                            team_name: 'a3'
-                        }
-                    }
+                    f2,
+                    f3
                 ]
             }
         }
-        res.send(JSON.stringify(data))
+        res.send(JSON.stringify(fixtures))
     }
 
-    app.get(`/fixtures/id/${fixtures.api.fixtures[0].fixture_id}`, (req, res) => {
-        const data =
-        {
-            api:
-            {
-                results: 3,
+    app.get(`/fixtures/id/${f1.fixture_id}`, (req, res) => {
+        const fixtures = {
+            api: {
+                results: 1,
                 fixtures: [
-                    {
-                        fixture_id: 'f1',
-                        event_date: yesterday.toUTCString(),
-                        venue: 'v1',
-                        homeTeam: {
-                            team_name: 'home1'
-                        },
-                        awayTeam: {
-                            team_name: 'away1'
-                        }
-                    }
+                    f1
                 ]
             }
         }
-        res.send(JSON.stringify(data))
+        res.send(JSON.stringify(fixtures))
     })
 
-    app.get(`/fixtures/id/${fixtures.api.fixtures[1].fixture_id}`, (req, res) => {
-        const data =
-        {
-            api:
-            {
-                results: 2,
+    app.get(`/fixtures/id/${f2.fixture_id}`, (req, res) => {
+        const fixtures = {
+            api: {
+                results: 1,
                 fixtures: [
-                    {
-                        fixture_id: 'f2',
-                        event_date: today.toUTCString(),
-                        venue: 'v2',
-                        homeTeam: {
-                            team_name: 'h2',
-                        },
-                        awayTeam: {
-                            team_name: 'a2'
-                        }
-                    }
+                    f2
                 ]
             }
         }
-        res.send(JSON.stringify(data))
+        res.send(JSON.stringify(fixtures))
     })
 
-    app.get(`/fixtures/id/${fixtures.api.fixtures[2].fixture_id}`, (req, res) => {
-        const data =
-        {
-            api:
-            {
-                results: 2,
+    app.get(`/fixtures/id/${f3.fixture_id}`, (req, res) => {
+        const fixtures = {
+            api: {
+                results: 1,
                 fixtures: [
-                    {
-                        fixture_id: 'f3',
-                        event_date: today.toUTCString(),
-                        venue: 'v3',
-                        homeTeam: {
-                            team_name: 'h3',
-                        },
-                        awayTeam: {
-                            team_name: 'a3'
-                        }
-                    }
+                    f3
                 ]
             }
         }
-        res.send(JSON.stringify(data))
+        res.send(JSON.stringify(fixtures))
     })
 
     const league = new comunio.League()
@@ -367,17 +319,17 @@ test('[Comunio] Gameday in existent round', (done) => {
         expect(gameDayFixtures).toBeDefined();
         expect(gameDayFixtures.length).toBe(2)
 
-        expect(gameDayFixtures[0].venue).toMatch(fixtures.api.fixtures[1].venue)
+        expect(gameDayFixtures[0].venue).toMatch(f2.venue)
         expect(gameDayFixtures[0].homeTeam).toBeDefined()
         expect(gameDayFixtures[0].awayTeam).toBeDefined()
-        expect(gameDayFixtures[0].homeTeam.name).toMatch(fixtures.api.fixtures[1].homeTeam.team_name)
-        expect(gameDayFixtures[0].awayTeam.name).toMatch(fixtures.api.fixtures[1].awayTeam.team_name)
+        expect(gameDayFixtures[0].homeTeam.name).toMatch(f2.homeTeam.team_name)
+        expect(gameDayFixtures[0].awayTeam.name).toMatch(f2.awayTeam.team_name)
 
-        expect(gameDayFixtures[1].venue).toMatch(fixtures.api.fixtures[2].venue)
+        expect(gameDayFixtures[1].venue).toMatch(f3.venue)
         expect(gameDayFixtures[1].homeTeam).toBeDefined()
         expect(gameDayFixtures[1].awayTeam).toBeDefined()
-        expect(gameDayFixtures[1].homeTeam.name).toMatch(fixtures.api.fixtures[2].homeTeam.team_name)
-        expect(gameDayFixtures[1].awayTeam.name).toMatch(fixtures.api.fixtures[2].awayTeam.team_name)
+        expect(gameDayFixtures[1].homeTeam.name).toMatch(f3.homeTeam.team_name)
+        expect(gameDayFixtures[1].awayTeam.name).toMatch(f3.awayTeam.team_name)
 
         next()
         done()
@@ -421,6 +373,7 @@ test('[Comunio] Fixture events', (done) => {
                 {
                     fixture_id: testData.fixtureId,
                     event_date: new Date().toUTCString(),
+                    statusShort: 'NS',
                     venue: venue,
                     homeTeam: {
                         team_name: homeTeam
@@ -429,7 +382,7 @@ test('[Comunio] Fixture events', (done) => {
                         team_name: awayTeam
                     },
                     lineups: {
-                        HomeTeam: {
+                        'HomeTeam': {
                             startXI: [
                                 {
                                     pos: "M",
@@ -443,7 +396,7 @@ test('[Comunio] Fixture events', (done) => {
                                 }
                             ]
                         },
-                        AwayTeam: {
+                        'AwayTeam': {
                             startXI: [
                                 {
                                     pos: "M",
@@ -483,6 +436,8 @@ test('[Comunio] Fixture events', (done) => {
     league.on(league.event.gameDay, (gameDayFixtures) => {
         const fixture = gameDayFixtures[0]
         fixture.on(fixture.event.lineups, (fixture) => {
+            console.log(fixture.homeTeam.lineup[0].player)
+            console.log(fixture.awayTeam.lineup[0].player)
             expect(fixture.homeTeam.name).toMatch(homeTeam)
             expect(fixture.homeTeam.lineup[0].pos).toMatch('M')
             expect(fixture.homeTeam.lineup[0].player).toMatch(homePlayer)

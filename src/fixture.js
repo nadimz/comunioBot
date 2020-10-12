@@ -9,25 +9,19 @@ exports.Fixture = class Fixture {
         lineups: 'Lineups' // lineups annouced
     }
 
-    constructor(fixtureId) {
-        /**
-         * Musn't be called directly! Use build() instead.
-         * The object needs to execute async operations
-         * before being ready
-         */
-
+    constructor(fixture) {
         /**
          * Public
          */
-        this.id = fixtureId
+        this.id = fixture.fixture_id
 
-        this.status = ''
-        this.venue  = ''
-        this.date   = undefined
+        this.status = fixture.statusShort
+        this.venue  = fixture.venue
+        this.date   = new Date(fixture.event_date)
 
         // home team
         this.homeTeam = {
-            name : '',
+            name : fixture.homeTeam.team_name,
             formation : '',
             lineup : [],
             substitutes : []
@@ -35,8 +29,8 @@ exports.Fixture = class Fixture {
 
         // away team
         this.awayTeam = {
+            name : fixture.awayTeam.team_name,
             formation : '',
-            name : '',
             lineup : [],
             substitutes : []
         }
@@ -48,24 +42,6 @@ exports.Fixture = class Fixture {
         this.middlewares = {
             'Lineups': []
         }
-    }
-
-    static async build(fixtureId) {
-        const object = new Fixture(fixtureId)
-
-        const data = await football.getFixtureById(fixtureId)
-
-        /**
-         * Update fixture data
-         */
-        object.status = data.api.fixtures[0].statusShort
-        object.date   = new Date(data.api.fixtures[0].event_date)
-        object.venue  = data.api.fixtures[0].venue
-
-        object.homeTeam.name = data.api.fixtures[0].homeTeam.team_name
-        object.awayTeam.name = data.api.fixtures[0].awayTeam.team_name
-
-        return object
     }
 
     // register middleware to handle an on event
@@ -81,34 +57,7 @@ exports.Fixture = class Fixture {
         /**
          * Move to waitingForLineups state
          */
-        const now = new Date()
-        let date  = new Date(this.date)
-
-        /**
-         * Lineups are available between 20 and 40 minutes before the game.
-         * See: https://www.api-football.com/documentation#fixtures-lineups
-         */
-        date.setMinutes(date.getMinutes() - 40)
-
-        if (date.getTime() > now.getTime()) {
-            console.log(`Schedule fixture ${this.id} lineups for ${date}`)
-
-            const job = new CronJob({
-                cronTime: date,
-                onTick: this._waitingForLineups,
-                timeZome: `${process.env.TZ}`
-            });
-
-            job.start()
-        }
-    }
-
-    /**
-     * Returns api-football fixtures model
-     * (https://www.api-football.com/documentation#fixtures-fixtures)
-     */
-    async getFixtures() {
-        return api.getFixturesByRound(this.id)
+        this._waitingForLineups()
     }
 
     _onEvent(event, arg) {
@@ -134,66 +83,103 @@ exports.Fixture = class Fixture {
         next()
     }
 
-    async _waitingForLineups() {
+    async _waitingForLineups(updated = false) {
         return football.getFixtureById(this.id)
             .then((data) => {
                 /**
-                 * Update fixture data
+                 * Update fixture status
                  */
                 this.status = data.api.fixtures[0].statusShort
 
-                /**
-                 * Check for lineups
-                 */
-                const fixture = data.api.fixtures[0]
-                if (fixture.lineups) {
-                    /**
-                     * Home team
-                     */
-                    const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
+                switch (this.status) {
+                case 'NS':
+                    try {
+                        /**
+                         * Check for lineups
+                         */
+                        const fixture = data.api.fixtures[0]
 
-                    homeTeam.startXI.sort(utils.sortPositions)
-                    homeTeam.substitutes.sort(utils.sortPositions)
+                        /**
+                         * Home team
+                         */
+                        const homeTeam = fixture.lineups[fixture.homeTeam.team_name]
 
-                    this.homeTeam.lineup      = [...homeTeam.startXI]
-                    this.homeTeam.substitutes = [...homeTeam.substitutes]
+                        homeTeam.startXI.sort(utils.sortPositions)
+                        homeTeam.substitutes.sort(utils.sortPositions)
 
-                    /**
-                     * Away team
-                     */
-                    const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
+                        this.homeTeam.lineup      = [...homeTeam.startXI]
+                        this.homeTeam.substitutes = [...homeTeam.substitutes]
 
-                    awayTeam.startXI.sort(utils.sortPositions)
-                    awayTeam.substitutes.sort(utils.sortPositions)
+                        this.homeTeam.lineup.sort(utils.sortPositions)
+                        this.homeTeam.substitutes.sort(utils.sortPositions)
 
-                    this.awayTeam.lineup      = [...awayTeam.startXI]
-                    this.awayTeam.substitutes = [...awayTeam.substitutes]
+                        /**
+                         * Away team
+                         */
+                        const awayTeam = fixture.lineups[fixture.awayTeam.team_name]
 
-                    this._onEvent(this.event.lineups, this)
+                        awayTeam.startXI.sort(utils.sortPositions)
+                        awayTeam.substitutes.sort(utils.sortPositions)
 
-                    /**
-                     * Move to waiting for ratings
-                     */
-                } else {
-                    /**
-                     * Lineups not available yet, keep waiting while the
-                     * fixture has not started yet
-                     */
-                    if (this.status === 'NS' ) {
-                        let date = new Date()
-                        date.setMinutes(date.getMinutes() + 5)
+                        this.awayTeam.lineup      = [...awayTeam.startXI]
+                        this.awayTeam.substitutes = [...awayTeam.substitutes]
 
-                        console.log(`Schedule fixture ${this.id} lineups for ${date}`)
+                        this.awayTeam.lineup.sort(utils.sortPositions)
+                        this.awayTeam.substitutes.sort(utils.sortPositions)
 
+                        this._onEvent(this.event.lineups, this)
+
+                        /**
+                         * Move to waiting for ratings
+                         */
+                        this._waitingForRatings()
+                    } catch (err) {
+                        /**
+                         * Schedule work for trying to get the lineups again
+                         */
+                        const now   = new Date()
+                        const start = new Date(this.date)
+
+                        const diffMs  = start - now; // milliseconds
+                        const diffMin = Math.floor((diffMs / 1000) / 60) // minutes
+
+                        let workTime = undefined
+
+                        /**
+                         * Lineups are available between 20 and 40 minutes before the game.
+                         * See: https://www.api-football.com/documentation#fixtures-lineups
+                         */
+                        if (diffMin > 40) {
+                            workTime = new Date(this.date)
+                            workTime.setMinutes(workTime.getMinutes() - 35)
+                        } else {
+                            workTime = new Date()
+                            workTime.setMinutes(workTime.getMinutes() + 10)
+                        }
+
+                        console.log(`Schedule fixture ${this.id} lineups for ${workTime}`)
+
+                        let me = this
                         const job = new CronJob({
-                            cronTime: date,
-                            onTick: this._waitingForLineups,
-                            timeZome: `${process.env.TZ}`
+                            cronTime: workTime,
+                            onTick: () => {
+                                me._waitingForLineups()
+                            },
+                            timeZome: `${config.timezone}`
                         });
 
                         job.start()
                     }
+                default:
+                    /**
+                     * Move to waiting for ratings
+                     */
+                    return this._waitingForRatings()
                 }
             })
+    }
+
+    async _waitingForRatings() {
+        return
     }
 }

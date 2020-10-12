@@ -34,16 +34,9 @@ exports.Round = class Round {
         const object = new Round(roundId)
         const data = await football.getFixturesByRound(roundId)
         if (data.api.results) {
-            const buildFixtures = async (fixtures) => {
-                for (const fixture of fixtures) {
-                    const item = await Fixture.build(fixture.fixture_id)
-                        .catch((err) => {throw err})
-
-                        object.fixtures.push(item)
-                }
+            for (const fixture of data.api.fixtures) {
+                    object.fixtures.push(new Fixture(fixture))
             }
-
-            await buildFixtures(data.api.fixtures)
         }
 
         return object

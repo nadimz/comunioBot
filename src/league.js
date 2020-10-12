@@ -29,26 +29,6 @@ exports.League = class League {
         }
     }
 
-    followup() {
-        this._work()
-    }
-
-    /**
-     * Returns api-football fixtures response model
-     * (https://www.api-football.com/documentation#fixtures-fixtures)
-     */
-    async getFixturesByRound(round) {
-        return football.getFixturesByRound(round)
-    }
-
-    /**
-     * Returns api-football fixtures response model
-     * (https://www.api-football.com/documentation#fixtures-fixtures)
-     */
-    async getFixturesByDate(date) {
-        return football.getFixturesByDate(date)
-    }
-
     // register middleware to handle an on event
     async on(event, middleware) {
         if (typeof middleware !== 'function') {
@@ -56,6 +36,10 @@ exports.League = class League {
         }
 
         this._middlewares[event].push(middleware)
+    }
+
+    followup() {
+        this._daily()
     }
 
     async _onEvent(event, arg) {
@@ -81,7 +65,7 @@ exports.League = class League {
         next()
     }
 
-    async _work() {
+    async _daily() {
         /**
          * Current round
          */
@@ -101,18 +85,11 @@ exports.League = class League {
          * Game day
          */
         await football.getFixturesByDate(new Date())
-            .then(async (data) => {
+            .then((data) => {
                 if (data.api.results) {
-                    const buildFixtures = async (fixtures) => {
-                        for (const fixture of fixtures) {
-                            const item = await Fixture.build(fixture.fixture_id)
-                                .catch((err) => {throw err})
-
-                            this.fixturesToday.push(item)
-                        }
+                    for (const fixture of data.api.fixtures) {
+                        this.fixturesToday.push(new Fixture(fixture))
                     }
-
-                    await buildFixtures(data.api.fixtures)
 
                     this._onEvent(this.event.gameDay, this.fixturesToday)
 
@@ -132,11 +109,13 @@ exports.League = class League {
 
 		console.log(`Schedule next daily for ${date}`)
 
-		let work = this._work
-		const job = new CronJob({
-			cronTime: date,
-			onTick: work,
-			timeZome: `${config.timezone}`
+        let me = this
+        const job = new CronJob({
+            cronTime: date,
+            onTick: () => {
+                me._daily()
+            },
+            timeZome: `${config.timezone}`
         });
 
 		job.start()
