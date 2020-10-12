@@ -1,6 +1,5 @@
-const { response } = require('express');
 const express = require('express');
-const comunio = require('../league')
+const comunio = require('../comunio/league')
 const config  = require('../lib/config')
 
 const app  = express()

@@ -1,7 +1,7 @@
 const config   = require('./lib/config')
 const utils    = require('./lib/utils')
 
-const League   = require('./league').League
+const League   = require('./comunio/league').League
 const Telegraf = require('telegraf')
 const Extra    = require('telegraf/extra')
 

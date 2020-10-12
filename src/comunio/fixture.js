@@ -1,6 +1,6 @@
-const config   = require('./lib/config')
-const utils    = require('./lib/utils')
-const football = require('./lib/api-football')
+const config   = require('../lib/config')
+const utils    = require('../lib/utils')
+const football = require('../lib/api-football')
 
 const CronJob  = require("cron").CronJob;
 

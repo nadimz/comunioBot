@@ -1,4 +1,4 @@
-const comunio = require('../league')
+const comunio = require('../comunio/league')
 
 test('[League] Middlewares for new round event', (done) => {
     const league = new comunio.League()

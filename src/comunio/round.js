@@ -1,5 +1,5 @@
-const config   = require('./lib/config')
-const football = require('./lib/api-football')
+const config   = require('../lib/config')
+const football = require('../lib/api-football')
 
 const Fixture  = require('./fixture').Fixture
 

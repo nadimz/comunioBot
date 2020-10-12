@@ -1,4 +1,4 @@
-const comunio = require('../fixture')
+const comunio = require('../comunio/fixture')
 
 test('[League] Middlewares for lineups event', (done) => {
     const data = {
