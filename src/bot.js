@@ -90,9 +90,40 @@ const publishLineups = async (fixture, next) => {
     .finally(() => next())
 }
 
+const publishRatings = async (fixture, next) => {
+    console.log(`Ratings available for ${fixture.homeTeam.name} vs ${fixture.awayTeam.name}`)
+
+    let msg = `💹 Las puntaciones del *${fixture.homeTeam.name}* vs *${fixture.awayTeam.name}* ya están disponibles ⚽\n\n`
+
+    /**
+     * Home team
+     */
+    msg += `*${fixture.homeTeam.name}*\n`
+    for (const player of fixture.homeTeam.ratings) {
+        const points = player.points.toString()
+        msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+    }
+
+    /**
+     * Away team
+     */
+    msg += `\n*${fixture.awayTeam.team_name}*\n`
+    for (const player of fixture.awayTeam.ratings) {
+        const points = player.points.toString()
+        msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+    }
+
+    publish(msg)
+    .catch((err) => {
+        console.log(err)
+    })
+    .finally(() => next())
+}
+
 const follwupFixtures = async (fixtures, next) => {
     for (const fixture of fixtures) {
         fixture.on(fixture.event.lineups, publishLineups)
+        fixture.on(fixture.event.ratings, publishRatings)
         fixture.followup()
     }
 

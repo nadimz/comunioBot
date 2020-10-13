@@ -7,13 +7,13 @@ exports.Mister = class Mister {
         this.community = community
         this.cookies = ''
     }
-    
+
     async get(endpoint) {
         const options = {
 			"method": "GET",
 			"headers": {
                     "Cookie": `${this.cookies}`
-				}	
+				}
         }
 
         const url = `${this.url}/${endpoint}`
@@ -30,12 +30,12 @@ exports.Mister = class Mister {
                     "X-Requested-With": "XMLHttpRequest",
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                 },
-            "body": params	
+            "body": params
         }
-        
+
         const url = `${this.url}/${endpoint}`
         console.log(`fetch ${url}`)
-        return fetch(url, options)            
+        return fetch(url, options)
     }
 
     async getAuthToken() {
@@ -56,7 +56,7 @@ exports.Mister = class Mister {
         var cookies = ''
         let setCookies = response.headers.raw()['set-cookie']
         for (let i = 0; i < setCookies.length; i++) {
-            var split = setCookies[i].split(';')          
+            var split = setCookies[i].split(';')
             cookies += split[0] + '; '
         }
         console.log(cookies)
@@ -71,19 +71,19 @@ exports.Mister = class Mister {
     async login(email, password) {
         const body = `{"method":"email","email":"${email}","password":"${password}"}`
         const options = {
-			"method": "POST",			
+			"method": "POST",
             "headers": {
                     "Content-Type": "application/json"
                 },
-            "body": body	
+            "body": body
         }
 
-        const url = `${config.misterUrl}/api2/auth/signin/email`        
+        const url = `${config.misterUrl}/api2/auth/signin/email`
         const response = await fetch(url, options)
         if (response.status == 200) {
             this.cookies = this.getCookies(response)
         }
-            
+
         return response
     }
 
@@ -91,7 +91,7 @@ exports.Mister = class Mister {
         await this.changeCommunity(this.community)
         const params = new URLSearchParams();
         params.append('post', 'gameweek');
-        return this.post('/ajax/sw', params)
+        return this.post('ajax/sw', params)
             .then((response) => response.json())
             .then((body) => {
                 return body

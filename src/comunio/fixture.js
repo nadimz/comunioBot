@@ -2,11 +2,13 @@ const config   = require('../lib/config')
 const utils    = require('../lib/utils')
 const football = require('../lib/api-football')
 
+const Mister   = require('../lib/mister').Mister
 const CronJob  = require("cron").CronJob;
 
 exports.Fixture = class Fixture {
     event = {
-        lineups: 'Lineups' // lineups annouced
+        lineups: 'Lineups', // lineups annouced
+        ratings: 'Ratings' // player ratings annouced
     }
 
     constructor(fixture) {
@@ -24,7 +26,8 @@ exports.Fixture = class Fixture {
             name : fixture.homeTeam.team_name,
             formation : '',
             lineup : [],
-            substitutes : []
+            substitutes : [],
+            ratings : []
         }
 
         // away team
@@ -32,7 +35,8 @@ exports.Fixture = class Fixture {
             name : fixture.awayTeam.team_name,
             formation : '',
             lineup : [],
-            substitutes : []
+            substitutes : [],
+            ratings : []
         }
 
         /**
@@ -40,8 +44,11 @@ exports.Fixture = class Fixture {
          */
         // middlewares
         this.middlewares = {
-            'Lineups': []
+            'Lineups': [],
+            'Ratings': []
         }
+
+        this.mister = new Mister(config.misterCommunityId)
     }
 
     // register middleware to handle an on event
@@ -113,6 +120,8 @@ exports.Fixture = class Fixture {
                         this.homeTeam.lineup.sort(utils.sortPositions)
                         this.homeTeam.substitutes.sort(utils.sortPositions)
 
+                        this.homeTeam.formation = homeTeam.formation
+
                         /**
                          * Away team
                          */
@@ -127,12 +136,17 @@ exports.Fixture = class Fixture {
                         this.awayTeam.lineup.sort(utils.sortPositions)
                         this.awayTeam.substitutes.sort(utils.sortPositions)
 
+                        this.awayTeam.formation = homeTeam.formation
+
+                        /**
+                         * Trigger event
+                         */
                         this._onEvent(this.event.lineups, this)
 
                         /**
                          * Move to waiting for ratings
                          */
-                        this._waitingForRatings()
+                        this._waitingForRatings(true)
                     } catch (err) {
                         /**
                          * Schedule work for trying to get the lineups again
@@ -170,16 +184,139 @@ exports.Fixture = class Fixture {
 
                         job.start()
                     }
+
+                    return
                 default:
                     /**
                      * Move to waiting for ratings
                      */
-                    return this._waitingForRatings()
+                    return this._waitingForRatings(true)
                 }
             })
     }
 
-    async _waitingForRatings() {
-        return
+    async _waitingForRatings(updated = false) {
+        try {
+            if (updated === false) {
+                /**
+                 * Update fixture status
+                 */
+                const data = await football.getFixtureById(this.id)
+                this.status = data.api.fixtures[0].statusShort
+            }
+
+            switch (this.status) {
+            case 'FT':
+                try {
+                    const gameweek = await this.mister.getGameWeek()
+                    let matchId = 0
+                    let idHome = 0
+                    let idAway = 0
+                    for (const match of gameweek.data.matches) {
+                        const home = this.homeTeam.name.indexOf(utils.normalizeUnicode(match.home))
+                        const away = this.awayTeam.name.indexOf(utils.normalizeUnicode(match.away))
+
+                        console.log('home: ' + this.homeTeam.name + ' away: ' + this.awayTeam.name)
+                        console.log('home: ' + match.home + ' away: ' + match.away)
+
+                        if (home >= 0 && away >= 0) {
+                            console.log('match!')
+                            matchId = match.id
+                            idHome = match.id_home
+                            idAway = match.id_away
+                            break
+                        }
+                    }
+
+                    this.homeTeam.ratings = [...gameweek.data.players[`${matchId}`].all[`${idHome}`]]
+                    this.awayTeam.ratings = [...gameweek.data.players[`${matchId}`].all[`${idAway}`]]
+
+                    /**
+                     * Insure all player ratings are ready before triggering event
+                     */
+                    for (const player of this.homeTeam.ratings) {
+                        const points = player.points.toString()
+                        if (points === '?') {
+                            throw 'player rating not ready'
+                        }
+                    }
+                    for (const player of this.awayTeam.ratings) {
+                        const points = player.points.toString()
+                        if (points === '?') {
+                            throw 'player rating not ready'
+                        }
+                    }
+
+                    /**
+                     * Trigger event
+                     */
+                    this._onEvent(this.event.ratings, this)
+                } catch (err) {
+                    /**
+                     * Ratings not available yet. Schedule work for trying to get them again
+                     */
+                    let later = new Date()
+                    later.setMinutes(later.getMinutes() + 10)
+                    let me = this
+                    const job = new CronJob({
+                        cronTime: later,
+                        onTick: () => {
+                            me._waitingForRatings()
+                        },
+                        timeZome: `${config.timezone}`
+                    });
+
+                    job.start()
+                }
+
+                return
+            case 'NS':
+            case '1H': {
+                /**
+                 * Schedule work for trying to get the ratings.
+                 * Fixture would typically end after 120 minutes
+                 */
+                let end = new Date(this.date)
+                end.setMinutes(end.getMinutes() + 45 + 15 + 45 + 15)
+                let me = this
+                const job = new CronJob({
+                    cronTime: end,
+                    onTick: () => {
+                        me._waitingForRatings()
+                    },
+                    timeZome: `${config.timezone}`
+                });
+
+                job.start()
+                return
+            }
+            case '2H': {
+                /**
+                 * Fixture not over yet. Schedule work for trying to get the ratings again
+                 */
+                let later = new Date()
+                later.setMinutes(later.getMinutes() + 10)
+                let me = this
+                const job = new CronJob({
+                    cronTime: later,
+                    onTick: () => {
+                        me._waitingForRatings()
+                    },
+                    timeZome: `${config.timezone}`
+                });
+
+                job.start()
+                return
+            }
+            default: {
+                /**
+                 * Something happened to the fixture. Stop trying to get rating
+                 */
+                return
+            }}
+        } catch (err) {
+            console.log('Something happened while checking for player ratings. Aborting fixture followup: ' + err)
+        }
+
     }
 }

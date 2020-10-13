@@ -13,5 +13,4 @@ exports.misterCommunityId   = process.env.MISTER_COMMUNITY_ID
 exports.misterEmail         = process.env.MISTER_EMAIL
 exports.misterPassword      = process.env.MISTER_PASSWORD
 
-exports.debug               = process.env.DEBUG
 exports.debugMockServerPort = process.env.DEBUG_MOCK_SERVER_PORT

@@ -15,7 +15,10 @@ let handlers = {
     currentRound : (req, res) => {},
     fixturesByRound : (req, res) => {},
     fixturesByDate : (req, res) => {},
-    fixtureById : (req, res) => {}
+    fixtureById : (req, res) => {},
+    changeCommunity : (req, res) => {},
+    feed : (req, res) => {},
+    gameweek : (req, res) => {}
 }
 
 let logger = function (req, res, next) {
@@ -51,6 +54,18 @@ beforeAll((done) => {
         handlers.fixtureById(req, res)
     })
 
+    app.get('/action/change', (req, res) => {
+        handlers.changeCommunity(req, res)
+    })
+
+    app.get('/feed', (req, res) => {
+        handlers.feed(req, res)
+    })
+
+    app.post('/ajax/sw', (req, res) => {
+        handlers.gameweek(req, res)
+    })
+
     const port = config.debugMockServerPort
 
     server = app.listen(port, () => {
@@ -59,6 +74,7 @@ beforeAll((done) => {
     })
 
     config.apiFootballUrl = `http://localhost:${port}`
+    config.misterUrl      = `http://localhost:${port}`
 });
 
 afterAll((done) => {
@@ -363,7 +379,7 @@ test('[Comunio] Fixture events', (done) => {
     const homeSub     = 'HomeSub'
     const awaySub     = 'AwaySub'
 
-    const fixtures =
+    let fixtures =
     {
         api:
         {
@@ -427,6 +443,65 @@ test('[Comunio] Fixture events', (done) => {
         res.send(JSON.stringify(fixtures))
     }
 
+    const gameweek = {
+        data: {
+            matches: [
+                {
+                    id: 1,
+                    home: 'HomeTeam',
+                    away: 'AwayTeam',
+                    id_home: 1,
+                    id_away: 2
+                },
+                {
+                    id: 2,
+                    home: 'h',
+                    away: 'a',
+                    id_home: 3,
+                    id_away: 4
+                }
+            ],
+            players : {
+                1 : {
+                    all: {
+                        1 : [
+                            {
+                                name: 'ph1',
+                                points: '5'
+                            },
+                            {
+                                name: 'ph2',
+                                points: '7'
+                            }
+                        ],
+                        2 : [
+                            {
+                                name: 'pa1',
+                                points: '4'
+                            },
+                            {
+                                name: 'pa2',
+                                points: '2'
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    handlers.changeCommunity = (req, res) => {
+        res.send()
+    }
+
+    handlers.feed = (req, res) => {
+        res.send('"auth":"6845c5ceac60acfbf4367111612e98e8"')
+    }
+
+    handlers.gameweek = (req, res) => {
+        res.send(JSON.stringify(gameweek))
+    }
+
     /**
      * Test
      */
@@ -448,7 +523,23 @@ test('[Comunio] Fixture events', (done) => {
             expect(fixture.awayTeam.lineup[0].player).toMatch(awayPlayer)
             expect(fixture.awayTeam.substitutes[0].pos).toMatch('D')
             expect(fixture.awayTeam.substitutes[0].player).toMatch(awaySub)
-            done()
+
+            fixture.on(fixture.event.ratings, (fixture) => {
+                expect(fixture.homeTeam.ratings[0].name).toMatch(gameweek.data.players['1'].all['1'][0].name)
+                expect(fixture.homeTeam.ratings[0].points).toMatch(gameweek.data.players['1'].all['1'][0].points)
+                expect(fixture.homeTeam.ratings[1].name).toMatch(gameweek.data.players['1'].all['1'][1].name)
+                expect(fixture.homeTeam.ratings[1].points).toMatch(gameweek.data.players['1'].all['1'][1].points)
+
+                expect(fixture.awayTeam.ratings[0].name).toMatch(gameweek.data.players['1'].all['2'][0].name)
+                expect(fixture.awayTeam.ratings[0].points).toMatch(gameweek.data.players['1'].all['2'][0].points)
+                expect(fixture.awayTeam.ratings[1].name).toMatch(gameweek.data.players['1'].all['2'][1].name)
+                expect(fixture.awayTeam.ratings[1].points).toMatch(gameweek.data.players['1'].all['2'][1].points)
+
+                done()
+            })
+
+            fixtures.api.fixtures[0].statusShort = 'FT'
+            fixture._waitingForRatings()
         })
 
         // trigger fixture update
