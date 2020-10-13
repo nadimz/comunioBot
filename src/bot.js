@@ -22,6 +22,15 @@ const publish = async (msg) => {
     return bot.telegram.sendMessage(config.chatId, msg, Extra.markdown())
 }
 
+const publishUpcomingRound = async(upcomingRound, next) => {
+    const days = (upcomingRound.start === 1) ? 'día' : 'días'
+    publish(`❗️ *Jornada ${upcomingRound.round} empieza en ${upcomingRound.start} ${days}* ❗️`)
+    .catch((err) => {
+        console.log(err)
+    })
+    .finally(() => next())
+}
+
 const publishRound = async(round, next) => {
     const fixtures = round.getFixtures()
 
@@ -129,6 +138,8 @@ const follwupFixtures = async (fixtures, next) => {
 
     next()
 }
+
+league.on(league.event.upcomingRound, publishUpcomingRound)
 
 league.on(league.event.newRound, publishRound)
 

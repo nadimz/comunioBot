@@ -1,5 +1,26 @@
 const comunio = require('../comunio/league')
 
+test('[League] Middlewares for upcoming round event', (done) => {
+    const league = new comunio.League()
+
+    // simulated event data
+    const roundData = 'RoundData'
+
+    league.on(league.event.upcomingRound, (data, next) => {
+        expect(data).toMatch(roundData);
+        next()
+    })
+
+    league.on(league.event.upcomingRound, (data, next) => {
+        expect(data).toMatch(roundData);
+        next()
+        done()
+    })
+
+    // trigger event
+    league._onEvent(league.event.upcomingRound, roundData)
+});
+
 test('[League] Middlewares for new round event', (done) => {
     const league = new comunio.League()
 

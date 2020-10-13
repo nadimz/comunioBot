@@ -21,6 +21,57 @@ let handlers = {
     gameweek : (req, res) => {}
 }
 
+const sampleGameweek = {
+    data: {
+        gameweek: {
+            gameweek: 4,
+            start: "4 days"
+        },
+        matches: [
+            {
+                id: 1,
+                home: 'HomeTeam',
+                away: 'AwayTeam',
+                id_home: 1,
+                id_away: 2
+            },
+            {
+                id: 2,
+                home: 'h',
+                away: 'a',
+                id_home: 3,
+                id_away: 4
+            }
+        ],
+        players : {
+            1 : {
+                all: {
+                    1 : [
+                        {
+                            name: 'ph1',
+                            points: '5'
+                        },
+                        {
+                            name: 'ph2',
+                            points: '7'
+                        }
+                    ],
+                    2 : [
+                        {
+                            name: 'pa1',
+                            points: '4'
+                        },
+                        {
+                            name: 'pa2',
+                            points: '2'
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
 let logger = function (req, res, next) {
     console.log(req.path)
     next()
@@ -147,6 +198,18 @@ test('[Comunio] New round & gameday', (done) => {
 
     handlers.fixtureById = (req, res) => {
         res.send(JSON.stringify(fixtures))
+    }
+
+    handlers.changeCommunity = (req, res) => {
+        res.send()
+    }
+
+    handlers.feed = (req, res) => {
+        res.send('"auth":"6845c5ceac60acfbf4367111612e98e8"')
+    }
+
+    handlers.gameweek = (req, res) => {
+        res.send(JSON.stringify(sampleGameweek))
     }
 
     /**
@@ -324,6 +387,18 @@ test('[Comunio] Gameday in existent round', (done) => {
         res.send(JSON.stringify(fixtures))
     })
 
+    handlers.changeCommunity = (req, res) => {
+        res.send()
+    }
+
+    handlers.feed = (req, res) => {
+        res.send('"auth":"6845c5ceac60acfbf4367111612e98e8"')
+    }
+
+    handlers.gameweek = (req, res) => {
+        res.send(JSON.stringify(sampleGameweek))
+    }
+
     const league = new comunio.League()
 
     league.on(league.event.newRound, (round, next) => {
@@ -443,53 +518,6 @@ test('[Comunio] Fixture events', (done) => {
         res.send(JSON.stringify(fixtures))
     }
 
-    const gameweek = {
-        data: {
-            matches: [
-                {
-                    id: 1,
-                    home: 'HomeTeam',
-                    away: 'AwayTeam',
-                    id_home: 1,
-                    id_away: 2
-                },
-                {
-                    id: 2,
-                    home: 'h',
-                    away: 'a',
-                    id_home: 3,
-                    id_away: 4
-                }
-            ],
-            players : {
-                1 : {
-                    all: {
-                        1 : [
-                            {
-                                name: 'ph1',
-                                points: '5'
-                            },
-                            {
-                                name: 'ph2',
-                                points: '7'
-                            }
-                        ],
-                        2 : [
-                            {
-                                name: 'pa1',
-                                points: '4'
-                            },
-                            {
-                                name: 'pa2',
-                                points: '2'
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-    }
-
     handlers.changeCommunity = (req, res) => {
         res.send()
     }
@@ -497,6 +525,8 @@ test('[Comunio] Fixture events', (done) => {
     handlers.feed = (req, res) => {
         res.send('"auth":"6845c5ceac60acfbf4367111612e98e8"')
     }
+
+    const gameweek = JSON.parse(JSON.stringify(sampleGameweek))
 
     handlers.gameweek = (req, res) => {
         res.send(JSON.stringify(gameweek))

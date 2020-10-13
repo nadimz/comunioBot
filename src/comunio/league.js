@@ -4,11 +4,13 @@ const football = require('../lib/api-football')
 const Round    = require('./round').Round
 const Fixture  = require('./fixture').Fixture
 const CronJob  = require("cron").CronJob;
+const Mister   = require('../lib/mister').Mister
 
 exports.League = class League {
     event = {
-        newRound: 'NewRound', // new round starts today
-        gameDay:  'GameDay'   // game day
+        upcomingRound:  'UpcomingRound',   // new round starts in a few days
+        newRound:       'NewRound',        // new round starts today
+        gameDay:        'GameDay',         // game day
     }
 
     constructor() {
@@ -24,9 +26,12 @@ exports.League = class League {
          */
         // middlewares
         this._middlewares = {
+            'UpcomingRound': [],
             'NewRound': [],
             'GameDay': [],
         }
+
+        this.mister = new Mister(config.misterCommunityId)
     }
 
     // register middleware to handle an on event
@@ -66,6 +71,28 @@ exports.League = class League {
     }
 
     async _daily() {
+        /**
+         * Upcoming round
+         */
+        await this.mister.login(config.misterEmail, config.misterPassword)
+        await this.mister.getGameWeek()
+            .then((response) => {
+                const upcomingRound = {
+                    round : response.data.gameweek.gameweek,
+                    start : response.data.gameweek.start.slice(0, response.data.gameweek.start.indexOf(' '))
+                }
+
+                /**
+                 * Trigger upcoming round event if there are three days or less
+                 * until the next round
+                 */
+                console.log(upcomingRound.start + ' days until next round')
+                if (upcomingRound.start > 0 && upcomingRound.start <= 3) {
+                    this._onEvent(this.event.upcomingRound, upcomingRound)
+                }
+            })
+            .catch((err) => console.log('Cannot get upcoming round: ' + err))
+
         /**
          * Current round
          */
