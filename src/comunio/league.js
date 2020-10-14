@@ -44,6 +44,7 @@ exports.League = class League {
     }
 
     followup() {
+        await this.mister.login(config.misterEmail, config.misterPassword)
         this._daily()
     }
 
@@ -74,7 +75,6 @@ exports.League = class League {
         /**
          * Upcoming round
          */
-        await this.mister.login(config.misterEmail, config.misterPassword)
         await this.mister.getGameWeek()
             .then((response) => {
                 const upcomingRound = {

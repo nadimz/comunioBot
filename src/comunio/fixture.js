@@ -61,6 +61,8 @@ exports.Fixture = class Fixture {
     }
 
     followup() {
+        await this.mister.login(config.misterEmail, config.misterPassword)
+
         /**
          * Move to waitingForLineups state
          */
@@ -197,7 +199,7 @@ exports.Fixture = class Fixture {
 
     async _waitingForRatings(updated = false) {
         try {
-            if (updated === false) {
+            if ((updated === false) && (this.status != 'FT')) {
                 /**
                  * Update fixture status
                  */
@@ -208,7 +210,6 @@ exports.Fixture = class Fixture {
             switch (this.status) {
             case 'FT':
                 try {
-                    await this.mister.login(config.misterEmail, config.misterPassword)
                     const gameweek = await this.mister.getGameWeek()
                     let matchId = 0
                     let idHome = 0
