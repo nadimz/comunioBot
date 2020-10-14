@@ -46,3 +46,9 @@ npm install
 // launch bot
 node ./src/main.js
 ```
+
+## Testing
+Run all test suites
+```shell
+npm run test
+```
