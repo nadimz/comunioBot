@@ -43,7 +43,7 @@ exports.League = class League {
         this._middlewares[event].push(middleware)
     }
 
-    followup() {
+    async followup() {
         await this.mister.login(config.misterEmail, config.misterPassword)
         this._daily()
     }

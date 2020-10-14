@@ -60,7 +60,7 @@ exports.Fixture = class Fixture {
         this.middlewares[event].push(middleware)
     }
 
-    followup() {
+    async followup() {
         await this.mister.login(config.misterEmail, config.misterPassword)
 
         /**
