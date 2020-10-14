@@ -13,7 +13,7 @@ ComunioBot's aim is to keep your communitiy up to date on league and fixutre eve
 ComunioBot uses three API providers:
    * [API-Football](https://www.api-football.com) to get league and fixture information and events.
    * [BeManager](https://mister.mundodeportivo.com) to get player ratings
-   * [Telegram Bot API](https://core.telegram.org/bots) for sending notification to a Telegram channel/group
+   * [Telegram Bot API](https://core.telegram.org/bots) for sending notifications to a Telegram channel/group
 
 To use this bot, you must:
   * Be subscribed to API-Football at [RapidAPI](https://rapidapi.com/api-sports/api/api-football) and have a valid API key. API-Football provides a free plan with a limit of 100 API calls per day. The bot is optimized to use up to 100 daily API calls (normally much less).
@@ -44,7 +44,7 @@ export MISTER_PASSWORD=<your bemanager password>
 npm install
 
 // launch bot
-node ./src/main.js
+node ./src/bot.js
 ```
 
 ## Testing
