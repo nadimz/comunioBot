@@ -116,7 +116,7 @@ const publishRatings = async (fixture, next) => {
     /**
      * Away team
      */
-    msg += `\n*${fixture.awayTeam.team_name}*\n`
+    msg += `\n*${fixture.awayTeam.name}*\n`
     for (const player of fixture.awayTeam.ratings) {
         const points = player.points.toString()
         msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
