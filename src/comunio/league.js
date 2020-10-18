@@ -79,7 +79,7 @@ exports.League = class League {
             .then((response) => {
                 const upcomingRound = {
                     round : response.data.gameweek.gameweek,
-                    start : response.data.gameweek.start.slice(0, response.data.gameweek.start.indexOf(' '))
+                    start : parseInt(response.data.gameweek.start.slice(0, response.data.gameweek.start.indexOf(' ')))
                 }
 
                 /**
