@@ -73,6 +73,11 @@ exports.League = class League {
 
     async _daily() {
         /**
+         * Clear daily data
+         */
+        this.fixturesToday = []
+
+        /**
          * Upcoming round
          */
         await this.mister.getGameWeek()
