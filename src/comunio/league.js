@@ -84,16 +84,19 @@ exports.League = class League {
             .then((response) => {
                 const upcomingRound = {
                     round : response.data.gameweek.gameweek,
-                    start : parseInt(response.data.gameweek.start.slice(0, response.data.gameweek.start.indexOf(' ')))
+                    start : parseInt(response.data.gameweek.start.slice(0, response.data.gameweek.start.indexOf(' '))),
+                    ts    : response.data.gameweek.ts
                 }
 
                 /**
                  * Trigger upcoming round event if there are three days or less
                  * until the next round
                  */
-                console.log(upcomingRound.start + ' days until next round')
-                if (upcomingRound.start > 0 && upcomingRound.start <= 3) {
-                    this._onEvent(this.event.upcomingRound, upcomingRound)
+                if (upcomingRound.ts > 0) {
+                    console.log(upcomingRound.start + ' days until next round')
+                    if (upcomingRound.start > 0 && upcomingRound.start <= 3) {
+                        this._onEvent(this.event.upcomingRound, upcomingRound)
+                    }
                 }
             })
             .catch((err) => console.log('Cannot get upcoming round: ' + err))
