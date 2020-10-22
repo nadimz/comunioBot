@@ -132,5 +132,25 @@ exports.League = class League {
                 }
             })
             .catch((err) => console.log('Cannot create game day: ' + err))
+
+        this._waitForDynoRestart()
+    }
+
+    _waitForDynoRestart() {
+        let date = new Date();
+		date.setDate(date.getDate() + 2)
+
+		console.log(`Schedule next daily for ${date}`)
+
+        let me = this
+        const job = new CronJob({
+            cronTime: date,
+            onTick: () => {
+                me._daily()
+            },
+            timeZome: `${config.timezone}`
+        });
+
+		job.start()
     }
 }
