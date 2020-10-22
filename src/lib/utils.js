@@ -4,8 +4,7 @@ exports.getRandomInt = (min, max) => {
 
 exports.normalizeUnicode = (unicode) => {
 	var combining = /[\u0300-\u036F]/g;
-	unicode.normalize('NFKD').replace(combining, '')
-	return unicode.replace('-', ' ')
+	return unicode.normalize('NFKD').replace(combining, '')
 }
 
 exports.getColorFromId = (colorId) => {
