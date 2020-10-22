@@ -92,10 +92,12 @@ exports.League = class League {
                  * Trigger upcoming round event if there are three days or less
                  * until the next round
                  */
-                if (upcomingRound.ts > 0) {
-                    console.log(upcomingRound.start + ' days until next round')
-                    if (upcomingRound.start > 0 && upcomingRound.start <= 3) {
-                        this._onEvent(this.event.upcomingRound, upcomingRound)
+                if (response.data.gameweek.start.indexOf('días') >= 0) {
+                    if (upcomingRound.ts > 0) {
+                        console.log(upcomingRound.start + ' days until next round')
+                        if (upcomingRound.start > 0 && upcomingRound.start <= 3) {
+                            this._onEvent(this.event.upcomingRound, upcomingRound)
+                        }
                     }
                 }
             })

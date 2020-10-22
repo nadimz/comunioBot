@@ -25,7 +25,7 @@ const sampleGameweek = {
     data: {
         gameweek: {
             gameweek: 4,
-            start: "4 days"
+            start: "4 días"
         },
         matches: [
             {
