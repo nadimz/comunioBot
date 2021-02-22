@@ -27,7 +27,8 @@ exports.Fixture = class Fixture {
             formation : '',
             lineup : [],
             substitutes : [],
-            ratings : []
+            ratings : [],
+            goals : 0
         }
 
         // away team
@@ -36,7 +37,8 @@ exports.Fixture = class Fixture {
             formation : '',
             lineup : [],
             substitutes : [],
-            ratings : []
+            ratings : [],
+            goals : 0
         }
 
         /**
@@ -223,6 +225,11 @@ exports.Fixture = class Fixture {
 
                         if (home >= 0 && away >= 0) {
                             console.log('match!')
+
+                            // game result
+                            this.homeTeam.goals = match.goals_home
+                            this.awayTeam.goals = match.goals_away
+
                             matchId = match.id
                             idHome = match.id_home
                             idAway = match.id_away
@@ -231,7 +238,7 @@ exports.Fixture = class Fixture {
                     }
 
                     this.homeTeam.ratings = [...gameweek.data.players[`${matchId}`].all[`${idHome}`]]
-                    this.awayTeam.ratings = [...gameweek.data.players[`${matchId}`].all[`${idAway}`]]
+                    this.awayTeam.ratings = [...gameweek.data.players[`${matchId}`].all[`${idAway}`]]                    
 
                     /**
                      * Insure all player ratings are ready before triggering event

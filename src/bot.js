@@ -60,34 +60,36 @@ const publishGameday = async (fixtures, next) => {
 const publishLineups = async (fixture, next) => {
     console.log(`Lineups available for ${fixture.homeTeam.name} vs ${fixture.awayTeam.name}`)
 
-    let msg = `✅ Onces confirmados en *${fixture.venue}* ⚽️\n\n`
+    let msg = `✅ Onces confirmados en *${fixture.venue}* 🏟\n\n`
 
     /**
-     * Home team
-     **/
-    msg += `*${fixture.homeTeam.name}*  (${fixture.homeTeam.formation})\n`
-    // XI
-    msg += 'XI\n'
+     * XI
+     */
+    
+    // Home team
+    msg += `*${fixture.homeTeam.name}*  (${fixture.homeTeam.formation})\n`    
     for (const player of fixture.homeTeam.lineup) {
         msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
+    }    
+
+    // Away team
+    msg += `\n*${fixture.awayTeam.name}*  (${fixture.awayTeam.formation})\n`
+    for (const player of fixture.awayTeam.lineup) {
+        msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
     }
-    // Subs
-    msg += `\nSubs\n`
+
+    /**
+     * Subs
+     */
+    msg += `*\nSubs*\n`
+    // Home team
+    msg += `\n${fixture.homeTeam.name}\n`
     for (const player of fixture.homeTeam.substitutes) {
         msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
     }
 
-    /**
-     * Away team
-     **/
-    msg += `\n*${fixture.awayTeam.name}*  (${fixture.awayTeam.formation})\n`
-    // XI
-    msg += 'XI\n'
-    for (const player of fixture.awayTeam.lineup) {
-        msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
-    }
-    // Subs
-    msg += `\nSubs\n`
+    // Away team
+    msg += `\n${fixture.awayTeam.name}\n`
     for (const player of fixture.awayTeam.substitutes) {
         msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
     }
@@ -99,18 +101,67 @@ const publishLineups = async (fixture, next) => {
     .finally(() => next())
 }
 
+const formatPlayerRating = (player) => {
+    // points
+    const points = player.points.toString()    
+
+    let msg = `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}`
+
+    try {
+        // events
+        if (player.events != false) {
+            for (const event of player.events) {
+                switch (event.category) {
+                    case 'sub_in':
+                        msg += ` ⤴️`
+                        break
+                    case 'yellow':
+                        msg += ` 🟨`
+                        break
+                    case 'red':
+                        msg += ` 🟥`
+                        break
+                    case 'assist':
+                        msg += ` 🎁`
+                        break
+                    case 'goal':
+                        msg += ` ⚽️`
+                        break
+                    case 'penalty':
+                        msg += ` ⚽️(penalty)`
+                        break
+                    case 'own_goal':
+                        msg += ` ⚽️(p.p)`
+                        break                
+                    case 'sub_out':
+                        msg += ` ⤵️`
+                        break
+                    default:
+                        break
+                }
+            }        
+        }
+    }
+    catch(err) {
+        // whoops
+    }
+
+    msg += `\n`
+
+    return msg
+}
+
 const publishRatings = async (fixture, next) => {
     console.log(`Ratings available for ${fixture.homeTeam.name} vs ${fixture.awayTeam.name}`)
 
-    let msg = `💹 Las puntaciones del *${fixture.homeTeam.name}* vs *${fixture.awayTeam.name}* ya están disponibles ⚽\n\n`
+    let msg = `❇️ ${fixture.homeTeam.name} *${fixture.homeTeam.goals}* : *${fixture.awayTeam.goals}* ${fixture.awayTeam.name}\n\n`
 
     /**
      * Home team
      */
     msg += `*${fixture.homeTeam.name}*\n`
     for (const player of fixture.homeTeam.ratings) {
-        const points = player.points.toString()
-        msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+        msg += formatPlayerRating(player)
     }
 
     /**
@@ -118,8 +169,7 @@ const publishRatings = async (fixture, next) => {
      */
     msg += `\n*${fixture.awayTeam.name}*\n`
     for (const player of fixture.awayTeam.ratings) {
-        const points = player.points.toString()
-        msg += `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}\n`
+        msg += formatPlayerRating(player)
     }
 
     publish(msg)
