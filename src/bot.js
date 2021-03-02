@@ -3,7 +3,6 @@ const utils    = require('./lib/utils')
 
 const League   = require('./comunio/league').League
 const Telegraf = require('telegraf')
-const Extra    = require('telegraf/extra')
 
 const bot = new Telegraf(config.tgramBotToken)
 
@@ -19,7 +18,7 @@ const formatFixtures = (msg, fixtures) => {
 }
 
 const publish = async (msg) => {
-    return bot.telegram.sendMessage(config.chatId, msg, Extra.markdown())
+    return bot.telegram.sendMessage(config.chatId, msg, {parse_mode: 'MarkdownV2'})
 }
 
 const pin = async (msgId) => {
