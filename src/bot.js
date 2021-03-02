@@ -22,6 +22,11 @@ const publish = async (msg) => {
     return bot.telegram.sendMessage(config.chatId, msg, Extra.markdown())
 }
 
+const pin = async (msgId) => {
+    return bot.telegram.unpinAllChatMessages(config.chatId)
+        .then(bot.telegram.pinChatMessage(config.chatId, msgId))
+}
+
 const publishUpcomingRound = async(upcomingRound, next) => {
     const seconds = Number(upcomingRound.ts)
     const days = Math.floor(seconds / (3600*24))
@@ -35,11 +40,12 @@ const publishUpcomingRound = async(upcomingRound, next) => {
         msg = `❗️⏳❗️ *Jornada ${upcomingRound.round} empieza en *mañana*`
         break
     default:
-        msg = `⏳ Jornada ${upcomingRound.round} empieza en ${days} 'días'`
+        msg = `⏳ Jornada ${upcomingRound.round} empieza en ${days} días`
         break
     }
 
     publish(msg)
+    .then(({msgId}) => pin(msgId))
     .catch((err) => {
         console.log(err)
     })
