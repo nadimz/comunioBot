@@ -2,7 +2,7 @@ const config   = require('./lib/config')
 const utils    = require('./lib/utils')
 
 const League   = require('./comunio/league').League
-const Telegraf = require('telegraf')
+const {Telegraf} = require('telegraf')
 
 const bot = new Telegraf(config.tgramBotToken)
 
