@@ -21,9 +21,9 @@ const publish = async (msg) => {
     return bot.telegram.sendMessage(config.chatId, msg, {parse_mode: 'MarkdownV2'})
 }
 
-const pin = async (msgId) => {
+const pin = async (message_id) => {
     return bot.telegram.unpinAllChatMessages(config.chatId)
-        .then(bot.telegram.pinChatMessage(config.chatId, msgId))
+        .then(bot.telegram.pinChatMessage(config.chatId, message_id))
 }
 
 const publishUpcomingRound = async(upcomingRound, next) => {
@@ -44,7 +44,7 @@ const publishUpcomingRound = async(upcomingRound, next) => {
     }
 
     publish(msg)
-    .then(({msgId}) => pin(msgId))
+    .then(({message_id}) => pin(message_id))
     .catch((err) => {
         console.log(err)
     })
