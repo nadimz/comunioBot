@@ -23,8 +23,23 @@ const publish = async (msg) => {
 }
 
 const publishUpcomingRound = async(upcomingRound, next) => {
-    const days = (upcomingRound.start === 1) ? 'día' : 'días'
-    publish(`❗️ *Jornada ${upcomingRound.round} empieza en ${upcomingRound.start} ${days}* ❗️`)
+    const seconds = Number(upcomingRound.ts)
+    const days = Math.floor(seconds / (3600*24))
+
+    let msg = ""
+    switch (days) {
+    case 0:
+        msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *hoy*`
+        break
+    case 1:
+        msg = `❗️⏳❗️ *Jornada ${upcomingRound.round} empieza en *mañana*`
+        break
+    default:
+        msg = `⏳ Jornada ${upcomingRound.round} empieza en ${days} 'días'`
+        break
+    }
+
+    publish(msg)
     .catch((err) => {
         console.log(err)
     })
