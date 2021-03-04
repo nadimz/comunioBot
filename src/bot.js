@@ -36,7 +36,7 @@ const publishUpcomingRound = async(upcomingRound, next) => {
         msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *hoy*`
         break
     case 1:
-        msg = `❗️⏳❗️ *Jornada ${upcomingRound.round} empieza en *mañana*`
+        msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *mañana*`
         break
     default:
         msg = `⏳ Jornada ${upcomingRound.round} empieza en ${days} días`
@@ -85,12 +85,12 @@ const publishLineups = async (fixture, next) => {
     /**
      * XI
      */
-    
+
     // Home team
-    msg += `*${fixture.homeTeam.name}*  (${fixture.homeTeam.formation})\n`    
+    msg += `*${fixture.homeTeam.name}*  (${fixture.homeTeam.formation})\n`
     for (const player of fixture.homeTeam.lineup) {
         msg += `*${utils.getColorFromPosition(player.pos)}* ${player.player}\n`
-    }    
+    }
 
     // Away team
     msg += `\n*${fixture.awayTeam.name}*  (${fixture.awayTeam.formation})\n`
@@ -123,7 +123,7 @@ const publishLineups = async (fixture, next) => {
 
 const formatPlayerRating = (player) => {
     // points
-    const points = player.points.toString()    
+    const points = player.points.toString()
 
     let msg = `${points.padEnd(6 - points.length, ' ')}${utils.getColorFromId(player.color)}  ${player.name}`
 
@@ -152,14 +152,14 @@ const formatPlayerRating = (player) => {
                         break
                     case 'own_goal':
                         msg += ` ⚽️(p.p)`
-                        break                
+                        break
                     case 'sub_out':
                         msg += ` ⤵️`
                         break
                     default:
                         break
                 }
-            }        
+            }
         }
     }
     catch(err) {
