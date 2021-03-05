@@ -32,15 +32,16 @@ const publishUpcomingRound = async(upcomingRound, next) => {
 
     let msg = ""
     switch (days) {
-    case 0:
-        msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *hoy*`
-        break
     case 1:
         msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *mañana*`
         break
-    default:
+    case 2:
+    case 3:
         msg = `⏳ Jornada ${upcomingRound.round} empieza en ${days} días`
         break
+    default:
+        next()
+        return
     }
 
     publish(msg)
