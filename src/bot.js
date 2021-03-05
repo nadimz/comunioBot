@@ -57,7 +57,7 @@ const publishRound = async(round, next) => {
 
     console.log('Publish round')
 
-    let msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy!* ⚽️\n\n'
+    let msg = '🏆🇪🇸 *Nueva jornada de fútbol empieza hoy* ⚽️\n\n'
 
     publish(formatFixtures(msg, fixtures))
     .catch((err) => {
