@@ -265,7 +265,7 @@ exports.Fixture = class Fixture {
                      * Ratings not available yet. Schedule work for trying to get them again
                      */
                     let later = new Date()
-                    later.setMinutes(later.getMinutes() + 10)
+                    later.setMinutes(later.getMinutes() + 5)
                     let me = this
                     const job = new CronJob({
                         cronTime: later,
