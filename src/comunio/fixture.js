@@ -280,7 +280,8 @@ exports.Fixture = class Fixture {
 
                 return
             case 'NS':
-            case '1H': {
+            case '1H':
+            case 'HT': {
                 /**
                  * Schedule work for trying to get the ratings.
                  * Fixture would typically end after 120 minutes
