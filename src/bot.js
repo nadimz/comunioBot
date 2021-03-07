@@ -18,7 +18,7 @@ const formatFixtures = (msg, fixtures) => {
 }
 
 const publish = async (msg) => {
-    return bot.telegram.sendMessage(config.chatId, msg, {parse_mode: 'MarkdownV2'})
+    return bot.telegram.sendMessage(config.chatId, msg, {parse_mode: 'Markdown'})
 }
 
 const pin = async (message_id) => {
@@ -33,7 +33,7 @@ const publishUpcomingRound = async(upcomingRound, next) => {
     let msg = ""
     switch (days) {
     case 1:
-        msg = `❗️⏳❗️ Jornada ${upcomingRound.round} empieza *mañana*`
+        msg = `❗️⏳ Jornada ${upcomingRound.round} empieza *mañana* ❗️`
         break
     case 2:
     case 3:
@@ -149,7 +149,7 @@ const formatPlayerRating = (player) => {
                         msg += ` ⚽️`
                         break
                     case 'penalty':
-                        msg += ` ⚽️(penalty)`
+                        msg += ` ⚽️(p)`
                         break
                     case 'own_goal':
                         msg += ` ⚽️(p.p)`
